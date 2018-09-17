@@ -1,0 +1,11 @@
+bin
+.DS_Store
+docs
+package-lock.json
+node_modules
+coverage
+bin
+.vscode/
+.nyc_output/
+mochawesome-report/
+aws/.terraform
