@@ -20,11 +20,11 @@ services:
         - mysql
     environment:
       NODE_ENV: development
-      DATABASE_HOST: mysql
-      DATABASE_USER: dbuser
-      DATABASE_PASSWORD: dbp4ss
-      DATABASE_NAME: exchange
-      DATABASE_PORT: 3306
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: p4SSW0rd
+      DB_SCHEMAS: exchange
+      DB_PORT: 3306
       WAIT_HOSTS: mysql:3306
       FLYWAY_URL: jdbc:mysql://mysql:3306 
       FLYWAY_USER: root
