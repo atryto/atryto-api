@@ -2,7 +2,7 @@ version: '3'
 
 services:
 
-  mysql:
+  db:
     image: mysql:5.7
     ports:
         - "3306:3306"
@@ -10,33 +10,32 @@ services:
       MYSQL_ROOT_PASSWORD: p4SSW0rd
       MYSQL_DATABASE: exchange
       MYSQL_USER: dbuser
-      MYSQL_PASSWORD: dbp4ss
-    
+      MYSQL_PASSWORD: dbp4ss 
+
   backend:
-    image: atryto-api
+    build: .
     ports:
         - "3000:3000"
     depends_on:
-        - mysql
+        - "db"
     environment:
       NODE_ENV: development
-      DB_HOST: mysql
+      DB_HOST: db
       DB_USER: root
       DB_PASSWORD: p4SSW0rd
       DB_SCHEMAS: exchange
       DB_PORT: 3306
-      WAIT_HOSTS: mysql:3306
-      FLYWAY_URL: jdbc:mysql://mysql:3306 
+      FLYWAY_URL: jdbc:mysql://db:3306 
       FLYWAY_USER: root
       FLYWAY_PASSWORD: p4SSW0rd
       FLYWAY_SCHEMAS: exchange
+
   frontend:
-    image: atryto-frontend
+    build: ../frontend/
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
-      - backend
+      - "backend"
     environment:
       NODE_ENV: development
       API_URL: backend:3000
-      WAIT_HOSTS: backend:3000

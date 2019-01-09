@@ -7,7 +7,6 @@ import ResetDb from "../resetDb";
 import { inspect } from "util";
 import IOffer from "../../models/IOffer";
 import OffersService from "../../services/offers";
-import OfferType from "../../models/OfferTypeEnum";
 import IOfferLookup from "../../models/IOfferLookup";
 import OfferLookupsService from "../../services/offerLookups";
 
@@ -62,7 +61,6 @@ describe("Offers Endpoints", function() {
     it("Type BUY -> User1 wants to Buy 1500USD with CAD at a rate of 1.30CAD per USD", (done) => {
       const offer: IOffer = {
         userid: user1.id,
-        type: OfferType.BUY,
         cityslug: 'toronto',
         sourcecoinsymbol: 'CAD', // coin the user has
         destcoinsymbol: 'USD', // coin the user wanted
@@ -83,7 +81,6 @@ describe("Offers Endpoints", function() {
         const offer: IOffer = await offerService.getById(JSON.parse(res.payload).insertId);
         expect(offer).to.exist;
         expect(offer.userid).to.be.equal(user1.id);
-        expect(offer.type).to.be.equal(OfferType.BUY);
         expect(offer.cityslug).to.be.equal('toronto');
         expect(offer.sourcecoinsymbol).to.be.equal('CAD');
         expect(offer.destcoinsymbol).to.be.equal('USD');
@@ -96,7 +93,6 @@ describe("Offers Endpoints", function() {
     it("Type SELL -> User1 wants to Sell 500CAD for USD at a rate of 1.30 CAD per usd", (done) => {
       const offer: IOffer = {
         userid: user1.id,
-        type: OfferType.SELL,
         cityslug: 'toronto',
         sourcecoinsymbol: 'CAD', // coin the user has
         destcoinsymbol: 'USD', // coin the user wants
@@ -117,7 +113,6 @@ describe("Offers Endpoints", function() {
         const offer: IOffer = await offerService.getById(JSON.parse(res.payload).insertId);
         expect(offer).to.exist;
         expect(offer.userid).to.be.equal(user1.id);
-        expect(offer.type).to.be.equal(OfferType.SELL);
         expect(offer.cityslug).to.be.equal('toronto');
         expect(offer.sourcecoinsymbol).to.be.equal('CAD');
         expect(offer.destcoinsymbol).to.be.equal('USD');
@@ -130,7 +125,6 @@ describe("Offers Endpoints", function() {
     it("Type EXCHANGE -> User1 wants to EXCHANGE 4BTC for ETH at a rate of 7.5ETH per BTC", (done) => {
       const offer: IOffer = {
         userid: user1.id,
-        type: OfferType.EXCHANGE,
         cityslug: 'toronto',
         sourcecoinsymbol: 'BTC', // coin the user has
         destcoinsymbol: 'ETH', // coin the user wants
@@ -151,7 +145,6 @@ describe("Offers Endpoints", function() {
         const offer: IOffer = await offerService.getById(JSON.parse(res.payload).insertId);
         expect(offer).to.exist;
         expect(offer.userid).to.be.equal(user1.id);
-        expect(offer.type).to.be.equal(OfferType.EXCHANGE);
         expect(offer.cityslug).to.be.equal('toronto');
         expect(offer.sourcecoinsymbol).to.be.equal('BTC');
         expect(offer.destcoinsymbol).to.be.equal('ETH');
@@ -166,7 +159,6 @@ describe("Offers Endpoints", function() {
   describe("Testing offer lookups", function() {
     it("Whenever someone looks for a coin in the platform we add that lookup", (done) => {
       const lookup: IOfferLookup = {
-        type: OfferType.EXCHANGE,
         cityslug: 'toronto',
         sourcecoinsymbol: 'BTC', // coin the user has
         destcoinsymbol: 'ETH', // coin the user wants
@@ -194,7 +186,6 @@ describe("Offers Endpoints", function() {
         expect(offerLookups).to.not.be.empty;
         const offerLookup: IOfferLookup = offerLookups[0];
         console.log(`offerLookup: ${JSON.stringify(offerLookup, null, 2)}`);
-        expect(offerLookup.type).to.be.equal(lookup.type);
         expect(offerLookup.cityslug).to.be.equal(lookup.cityslug);
         expect(offerLookup.sourcecoinsymbol).to.be.equal(lookup.sourcecoinsymbol);
         expect(offerLookup.destcoinsymbol).to.be.equal(lookup.destcoinsymbol);

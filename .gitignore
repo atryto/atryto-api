@@ -1,6 +1,7 @@
 bin
 .DS_Store
 docs
+out.data
 package-lock.json
 node_modules
 coverage

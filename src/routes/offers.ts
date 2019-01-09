@@ -21,15 +21,14 @@ export function setupRoutes(fastify) {
         return reply.code(401).send({ auth: false, message: 'User not logged in.' });
       }
 
-      if (!request.body.type || !request.body.cityslug || !request.body.amount ||
-          !request.body.sourcecoinsymbol || !request.body.destcoinsymbol || !request.body.wantedpriceperunit) {
+      if (!request.body.cityslug || !request.body.amount || !request.body.sourcecoinsymbol ||
+        !request.body.destcoinsymbol || !request.body.wantedpriceperunit) {
         logger.error('Missing field');
         reply.code(400).send({ msg: "Missing field" });
       }
       const user: IUser = await jwt.verify(token, config.tokenSecret) as IUser;
       const offer: IOffer = {
         userid: user.id,
-        type: request.body.type,
         cityslug: request.body.cityslug,
         sourcecoinsymbol: request.body.sourcecoinsymbol,
         destcoinsymbol: request.body.destcoinsymbol,
@@ -77,16 +76,19 @@ export function setupRoutes(fastify) {
   fastify.get("/offers", async (request, reply) => {
     try {
       const offerService = new OffersService();
-      if (!request.query || !request.query.cityslug || !request.query.sourcecoinsymbol  || !request.query.destcoinsymbol) {
-        reply.code(400).send({ msg: "Missing field" });
-        logger.error('Missing field');
+      console.log('JSON.stringify(request.query, null,2)');
+      console.log(JSON.stringify(request.query, null,2));
+      const query = {
+        cityslug: request.query.city && request.query.city.trim().toLowerCase(),
+        sourcecoinsymbol: request.query.sourceCurrency && request.query.sourceCurrency.trim().toUpperCase(),
+        destcoinsymbol: request.query.targetCurrency && request.query.targetCurrency.trim().toUpperCase(),
       }
-      const offers = await offerService.get(request.query);
+      const offers = await offerService.get(query);
       const response = { result: offers };
       reply.code(200).send(response);
       // asynchronously inserting OfferLookup
       const offerLookupService = new OfferLookupsService();
-      const dbOfferLookup = offerLookupService.insert(request.query);
+      const dbOfferLookup = offerLookupService.insert(query);
       logger.info(`inserting OfferLookup : ${JSON.stringify(dbOfferLookup)}`);
     } catch (error) {
       reply.code(500).send(error);

@@ -47,7 +47,6 @@ CREATE TABLE IF NOT EXISTS exchange.coins (
 CREATE TABLE IF NOT EXISTS exchange.offers (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
   `userid` INTEGER NOT NULL, 
-  `type` varchar(255)  NOT NULL, -- BUY, SELL, EXCHANGE
   `cityslug` varchar(255) NOT NULL, 
   `sourcecoinsymbol` varchar(255) NOT NULL,
   `destcoinsymbol` varchar(255) NOT NULL, 
@@ -63,7 +62,6 @@ CREATE TABLE IF NOT EXISTS exchange.offers (
 
 CREATE TABLE IF NOT EXISTS exchange.offerlookups (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
-  `type` varchar(255)  NOT NULL, 
   `cityslug` varchar(255) NOT NULL, 
   `sourcecoinsymbol` varchar(255) NOT NULL, 
   `destcoinsymbol` varchar(255) NOT NULL,
