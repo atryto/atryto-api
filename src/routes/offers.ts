@@ -9,7 +9,7 @@ const logger: any = require("pino")({ level: config.logLevel });
 export function setupRoutes(fastify) {
   /**
    * @api {post} /offers Insert an offer into the database
-   * @apiGroup Users
+   * @apiGroup Offers
    * @apiParam {String} email the user email
    * @apiParam {String} name the user display name
    * * @apiParam {String} password the user password
@@ -47,8 +47,8 @@ export function setupRoutes(fastify) {
   });
 
   /**
-   * @api {put} /users Edit a user that will be find out according to the token
-   * @apiGroup Users
+   * @api {put} /offers Edit an offer that will be find out according to the token
+   * @apiGroup Offers
    * @apiParam {String} id the Id
    */
   fastify.put("/offers", async (request, reply) => {
@@ -69,15 +69,13 @@ export function setupRoutes(fastify) {
   });
 
   /**
-   * @api {get} /users Returns All Users(allows query params)
-   * @apiGroup Users
+   * @api {get} /offers Returns All Offers
+   * @apiGroup Offers
    * @apiParam {String} id the Id
    */
   fastify.get("/offers", async (request, reply) => {
     try {
       const offerService = new OffersService();
-      console.log('JSON.stringify(request.query, null,2)');
-      console.log(JSON.stringify(request.query, null,2));
       const query = {
         cityslug: request.query.city && request.query.city.trim().toLowerCase(),
         sourcecoinsymbol: request.query.sourceCurrency && request.query.sourceCurrency.trim().toUpperCase(),

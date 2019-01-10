@@ -31,7 +31,7 @@ export function setupRoutes(fastify) {
   });
 
   /**
-   * @api {post} /users/login - Login Returns a valid token
+   * @api {post} /users/login Login Returns a valid token
    * @apiGroup Users
    * @apiParam {String} email the user email
    * @apiParam {String} password the user password
@@ -54,7 +54,7 @@ export function setupRoutes(fastify) {
 
 
   /**
-   * @api {get} /users Returns All Users(allows query params)
+   * @api {get} /users Returns All Users
    * @apiGroup Users
    * @apiParam {String} id the Id
    */
