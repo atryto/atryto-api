@@ -6,20 +6,21 @@ CREATE TABLE IF NOT EXISTS exchange.users (
   `username` varchar(63)  NOT NULL UNIQUE, 
   `password` varchar(255)  NOT NULL, 
   `profilepictureurl` text,
+  `cityslug` varchar(255)  NOT NULL, 
   `createdat` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updatedat` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deletedat` TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (`id`) 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=default;
 
-CREATE TABLE IF NOT EXISTS exchange.brokers (
+CREATE TABLE IF NOT EXISTS exchange.exchanges (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
   `userid` INTEGER NOT NULL, 
   `website` varchar(255)  NOT NULL, 
   `createdat` TIMESTAMP  DEFAULT CURRENT_TIMESTAMP,
   `updatedat` TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) ,
-  CONSTRAINT `user-id-brokers-key` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `user-id-exchanges-key` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=default;
 
 CREATE TABLE IF NOT EXISTS exchange.cities (

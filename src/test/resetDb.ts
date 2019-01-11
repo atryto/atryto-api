@@ -8,7 +8,7 @@ export default class ResetDb {
     await db.queryWrite(`DELETE FROM ${config.database.schema}.userrates`, []);
     await db.queryWrite(`DELETE FROM ${config.database.schema}.offers`, []);
     await db.queryWrite(`DELETE FROM ${config.database.schema }.offerlookups`, []);
-    await db.queryWrite(`DELETE FROM ${config.database.schema}.brokers`, []);
+    await db.queryWrite(`DELETE FROM ${config.database.schema}.exchanges`, []);
     await db.queryWrite(`DELETE FROM ${config.database.schema}.users`, []);
     return true;
   }

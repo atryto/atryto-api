@@ -6,5 +6,7 @@ interface IUser extends ITimestamp {
   username?: string;
   password?: string;
   profilepictureurl?: string;
+  cityslug: string;
+  allowonlinetransactions: boolean;
 }
 export default IUser;

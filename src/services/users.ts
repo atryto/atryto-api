@@ -3,29 +3,19 @@ import IUser from "../models/iUser";
 import UserDAO from "../daos/userDAO";
 import * as jwt from "jsonwebtoken";
 import * as bcrypt from "bcrypt";
+import AbstractService from "./abstractService";
 
 const logger: any = require("pino")({ level: config.logLevel });
 
-export default class UsersService {
-  private dao: UserDAO;
-
+export default class UsersService extends AbstractService<IUser> {
+  
   constructor() {
-    this.dao = new UserDAO();
-  }
-
-  public async insert(user: IUser) {
-    try {
-      const result = await this.dao.insert(user);
-      return result;
-    } catch (error) {
-      logger.error(error);
-      throw error;
-    }
+    super(new UserDAO());
   }
 
   public async get(user: IUser): Promise<IUser[]> {
     try {
-      const users = await this.dao.get(user);
+      const users = await super.get(user);
       return users.map(user => {
         delete user.password;
         return user;
@@ -36,9 +26,9 @@ export default class UsersService {
     }
   }
 
-  public async getById(id): Promise<IUser> {
+  public async getById(id: number): Promise<IUser> {
     try {
-      const user: IUser = await this.dao.getById(id);
+      const user: IUser = await super.getById(id) as IUser;
       delete user.password;
       return user;
     } catch (error) {
@@ -49,7 +39,7 @@ export default class UsersService {
 
   public async login(user: IUser): Promise<String> {
     try {
-      const query = {} as IUser;
+      const query: IUser = {} as IUser;
 
       if (user.email) query.email = user.email;
       if (user.username) query.username = user.username;

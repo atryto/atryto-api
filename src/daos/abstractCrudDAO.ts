@@ -27,6 +27,11 @@ export default class AbstractCrudDAO<T> {
     return this.insertQuery(model, this.dbTableName);
   }
 
+  public async update<T>(model: T) {
+    // TO DO
+    return null;
+  }
+
   public async getById<T>(id: number): Promise<T> {
     const result: T[] = await this.db.queryWrite(`SELECT * FROM ${config.database.schema}.${this.dbTableName} WHERE id=?;`, [id]);
     return (result && result.length > 0) ? result[0] : null;
@@ -42,6 +47,11 @@ export default class AbstractCrudDAO<T> {
     }
     getQuery += ';';
     return this.db.queryWrite(getQuery, model ? Object.values(model) : []);
+  }
+
+  public async delete<T>(id: number): Promise<boolean> {
+    const result: T[] = await this.db.queryWrite(`DELETE FROM ${config.database.schema}.${this.dbTableName} WHERE id=?;`, [id]);
+    return true;
   }
 
 }

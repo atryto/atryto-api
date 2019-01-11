@@ -104,12 +104,42 @@ export function setupRoutes(fastify) {
       if (!token) {
         return reply.code(401).send({ auth: false, message: 'No token provided.' });
       }
-      const user = await jwt.verify(token, config.tokenSecret);
+      const user: IUser = await jwt.verify(token, config.tokenSecret) as IUser;
       if (!user) {
         return reply.code(401).send({ auth: false, message: 'Failed to authenticate token.' });
       }
-      // TODO EDIT USER
-      reply.code(200).send({msg: 'User authenticated successfully'});
+      const userService = new UsersService();
+      const updatedUser:IUser = await userService.update(user) as IUser;
+      delete updatedUser.password;
+      reply.code(200).send(updatedUser);
+    } catch (error) {
+      reply.code(500).send(error);
+      logger.error(error);
+    }
+  });
+
+  /**
+   * @api {delete} /users Deletes a logged in user
+   * @apiGroup Users
+   */
+  fastify.delete("/users", async (request, reply) => {
+    try {
+      const token = request.headers['x-access-token'];
+      if (!token) {
+        return reply.code(401).send({ auth: false, message: 'No token provided.' });
+      }
+      const user: IUser = await jwt.verify(token, config.tokenSecret) as IUser;
+      if (!user) {
+        return reply.code(401).send({ auth: false, message: 'Failed to authenticate token.' });
+      }
+      if (!user.id) {
+        return reply.code(404).send({message: 'User id not found.' });
+      }
+      const userService = new UsersService();
+      const users = await userService.delete(user.id);
+      const response = { result: users };
+      reply.code(200).send(response);
+      logger.info(JSON.stringify(response));
     } catch (error) {
       reply.code(500).send(error);
       logger.error(error);
