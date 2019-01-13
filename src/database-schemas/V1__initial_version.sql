@@ -1,56 +1,58 @@
 CREATE DATABASE IF NOT EXISTS exchange;
+CREATE DATABASE IF NOT EXISTS exchange_test;
   
-CREATE TABLE IF NOT EXISTS exchange.users (
+CREATE TABLE IF NOT EXISTS users (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
-  `email` varchar(255)  NOT NULL UNIQUE, 
-  `username` varchar(63)  NOT NULL UNIQUE, 
-  `password` varchar(255)  NOT NULL, 
-  `profilepictureurl` text,
-  `cityslug` varchar(255)  NOT NULL, 
+  `email` VARCHAR(255)  NOT NULL UNIQUE, 
+  `username` VARCHAR(63)  NOT NULL UNIQUE, 
+  `password` VARCHAR(255)  NOT NULL, 
+  `profilepictureurl` TEXT, 
+  `cityslug` VARCHAR(255)  NOT NULL, 
+  `allowonlinetransactions` TINYINT(1) NOT NULL DEFAULT 1,
   `createdat` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updatedat` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deletedat` TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (`id`) 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=default;
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4 COLLATE=utf8mb4_bin;
 
-CREATE TABLE IF NOT EXISTS exchange.exchanges (
+CREATE TABLE IF NOT EXISTS exchanges (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
   `userid` INTEGER NOT NULL, 
-  `website` varchar(255)  NOT NULL, 
+  `website` VARCHAR(255)  NOT NULL, 
   `createdat` TIMESTAMP  DEFAULT CURRENT_TIMESTAMP,
   `updatedat` TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) ,
   CONSTRAINT `user-id-exchanges-key` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=default;
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4 COLLATE=utf8mb4_bin;
 
-CREATE TABLE IF NOT EXISTS exchange.cities (
+CREATE TABLE IF NOT EXISTS cities (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
-  `slug` varchar(255)  NOT NULL UNIQUE,
-  `name` varchar(255)  NOT NULL, 
-  `country` varchar(255)  NOT NULL, 
+  `slug` VARCHAR(255)  NOT NULL UNIQUE,
+  `name` VARCHAR(255)  NOT NULL, 
+  `country` VARCHAR(255)  NOT NULL, 
   `createdat` TIMESTAMP  DEFAULT CURRENT_TIMESTAMP,
   `updatedat` TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=default;
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4 COLLATE=utf8mb4_bin;
 
-CREATE TABLE IF NOT EXISTS exchange.coins (
+CREATE TABLE IF NOT EXISTS coins (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
-  `type` varchar(255)  NOT NULL, -- fiat, crypto
-  `name` varchar(255)  NOT NULL UNIQUE, 
-  `symbol` varchar(255)  NOT NULL UNIQUE, 
-  `logourl` text,
+  `type` VARCHAR(255)  NOT NULL, -- fiat, crypto
+  `name` VARCHAR(255)  NOT NULL UNIQUE, 
+  `symbol` VARCHAR(255)  NOT NULL UNIQUE, 
+  `logourl` TEXT,
   `createdat` TIMESTAMP  DEFAULT CURRENT_TIMESTAMP,
   `updatedat` TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=default;
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4 COLLATE=utf8mb4_bin;
 
 
-CREATE TABLE IF NOT EXISTS exchange.offers (
+CREATE TABLE IF NOT EXISTS offers (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
   `userid` INTEGER NOT NULL, 
-  `cityslug` varchar(255) NOT NULL, 
-  `sourcecoinsymbol` varchar(255) NOT NULL,
-  `destcoinsymbol` varchar(255) NOT NULL, 
+  `cityslug` VARCHAR(255) NOT NULL, 
+  `sourcecoinsymbol` VARCHAR(255) NOT NULL,
+  `destcoinsymbol` VARCHAR(255) NOT NULL, 
   `minamount` INTEGER, 
   `amount` INTEGER NOT NULL, 
   `wantedpriceperunit` DECIMAL(10,2), 
@@ -59,18 +61,18 @@ CREATE TABLE IF NOT EXISTS exchange.offers (
   `deletedat` TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (`id`) ,
   CONSTRAINT `user-id-offer-key` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=default;
+  ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4 COLLATE=utf8mb4_bin;
 
-CREATE TABLE IF NOT EXISTS exchange.offerlookups (
+CREATE TABLE IF NOT EXISTS offerlookups (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
-  `cityslug` varchar(255) NOT NULL, 
-  `sourcecoinsymbol` varchar(255) NOT NULL, 
-  `destcoinsymbol` varchar(255) NOT NULL,
+  `cityslug` VARCHAR(255) NOT NULL, 
+  `sourcecoinsymbol` VARCHAR(255) NOT NULL, 
+  `destcoinsymbol` VARCHAR(255) NOT NULL,
   `createdat` TIMESTAMP  DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=default;
+  ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4 COLLATE=utf8mb4_bin;
 
-CREATE TABLE IF NOT EXISTS exchange.userrates (
+CREATE TABLE IF NOT EXISTS userrates (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
   `userid` INTEGER NOT NULL,
   -- `offerid` INTEGER NOT NULL,
@@ -81,5 +83,5 @@ CREATE TABLE IF NOT EXISTS exchange.userrates (
   -- CONSTRAINT `offer-id-rates-key` FOREIGN KEY (`offerid`) REFERENCES `offers` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `user-id-rates-key` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `rater-user-id-rates-key` FOREIGN KEY (`rateruserid`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=default;
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4 COLLATE=utf8mb4_bin;
 

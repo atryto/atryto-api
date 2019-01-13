@@ -65,4 +65,18 @@ export default class UsersService extends AbstractService<IUser> {
     }
   }
 
+  public async update(id:number, model: IUser): Promise<Boolean> {
+    if ('email' in model) {
+      throw Error('email cannot be modified');
+    }
+    if ('username' in model) {
+      throw Error('username cannot be modified');
+    }
+    if ('password' in model) {
+      const salt = await bcrypt.genSalt(config.passwordSalt);
+      model.password = await bcrypt.hash(model.password, salt);
+    }
+    return super.update(id, model);
+  }
+
 }

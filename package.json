@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node node_modules/typescript/bin/tsc",
     "test": " node_modules/.bin/nyc node_modules/.bin/mocha -r ts-node/register src/**/*.test.ts --exit",
-    "create-db-and-test": "npm run dev-init-db &&  DB_SCHEMAS=exchange_test npm run test",
+    "create-db-and-test": "npm run dev-init-db-test && DB_SCHEMAS=exchange_test npm run test",
     "code-coverage": "node_modules/.bin/nyc report --reporter=text",
     "start": "npm run init-db && node bin/server.js",
     "watch": "node node_modules/typescript/bin/tsc && ./node_modules/concurrently/src/main.js \"node node_modules/typescript/bin/tsc -w --outDir bin\" \"node_modules/pm2/bin/pm2 start bin/server.js --watch --no-daemon\" ",
@@ -22,7 +22,8 @@
     "docs": "node_modules/apidoc/bin/apidoc -i ./src -o ./docs",
     "tslint": "node_modules/tslint/bin/tslint './src/**/**/*.ts'",
     "init-db": "flyway -locations=filesystem:src/database-schemas migrate",
-    "dev-init-db": "FLYWAY_URL=jdbc:mysql://127.0.0.1:3306 FLYWAY_USER=root FLYWAY_PASSWORD=root FLYWAY_SCHEMAS=exchange flyway -locations=filesystem:src/database-schemas migrate"
+    "dev-init-db": "FLYWAY_URL=jdbc:mysql://127.0.0.1:3306 FLYWAY_USER=root FLYWAY_PASSWORD=root FLYWAY_SCHEMAS=exchange flyway -locations=filesystem:src/database-schemas migrate",
+    "dev-init-db-test": "FLYWAY_URL=jdbc:mysql://127.0.0.1:3306 FLYWAY_USER=root FLYWAY_PASSWORD=root FLYWAY_SCHEMAS=exchange_test flyway -locations=filesystem:src/database-schemas migrate"
   },
   "nyc": {
     "extension": [
@@ -57,6 +58,7 @@
     "jsonwebtoken": "^8.3.0",
     "mocha": "5.0.2",
     "mochawesome": "3.0.2",
+    "moment": "^2.23.0",
     "mysql": "2.15.0",
     "nyc": "11.4.1",
     "pino": "4.15.4",

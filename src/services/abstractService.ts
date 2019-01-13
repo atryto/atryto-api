@@ -34,10 +34,10 @@ export default class AbstractService<T> {
     }
   }
 
-  public async update(model: T): Promise<T> {
+  public async update(id:number, model: T): Promise<Boolean> {
     try {
-      const updatedModel:T = await this.dao.update(model) as T;
-      return updatedModel;
+      await this.dao.update(id, model);
+      return true;
     } catch (error) {
       logger.error(error);
       throw error;

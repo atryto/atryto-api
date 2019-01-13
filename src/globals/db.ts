@@ -55,4 +55,8 @@ export default class Db {
     });
   }
 
+  public getConnection(): Promise<any> {
+    return this.connection;
+  }
+
 }

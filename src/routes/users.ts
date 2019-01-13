@@ -98,8 +98,11 @@ export function setupRoutes(fastify) {
    * @apiGroup Users
    * @apiParam {String} id the Id
    */
-  fastify.put("/users", async (request, reply) => {
+  fastify.put("/users/:id", async (request, reply) => {
     try {
+      if(!request.params || !request.params.id) {
+        throw Error('Missing id path parameter');
+      }
       const token = request.headers['x-access-token'];
       if (!token) {
         return reply.code(401).send({ auth: false, message: 'No token provided.' });
@@ -108,9 +111,9 @@ export function setupRoutes(fastify) {
       if (!user) {
         return reply.code(401).send({ auth: false, message: 'Failed to authenticate token.' });
       }
+      
       const userService = new UsersService();
-      const updatedUser:IUser = await userService.update(user) as IUser;
-      delete updatedUser.password;
+      const updatedUser = await userService.update(request.params.id, request.body);
       reply.code(200).send(updatedUser);
     } catch (error) {
       reply.code(500).send(error);

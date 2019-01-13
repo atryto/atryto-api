@@ -1,11 +1,11 @@
-INSERT INTO exchange.cities (name, slug, country)
+INSERT INTO cities (name, slug, country)
 VALUES 
   ('Toronto', 'toronto', 'Canada'),
   ('Ottawa', 'ottawa', 'Canada'),
   ('Vancouver', 'vancouver', 'Canada'),
   ('Markham', 'markham', 'Canada');
 
-INSERT INTO exchange.coins (type, name, symbol)
+INSERT INTO coins (type, name, symbol)
 VALUES
   ('fiat', 'US Dollar', 'USD'),
   ('fiat', 'Canadian Dollar', 'CAD'),

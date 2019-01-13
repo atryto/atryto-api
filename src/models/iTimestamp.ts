@@ -1,4 +1,6 @@
-interface ITimestamp {
+import ISequence from "./ISequence";
+
+interface ITimestamp extends ISequence {
   createdat?: number;
   updatedat?: number;
 }
