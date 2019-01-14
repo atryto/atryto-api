@@ -9,16 +9,15 @@ const logger: any = require("pino")({ level: config.logLevel });
 export function setupRoutes(fastify) {
   
   /**
-   * @api {post} /offers Insert an offer into the database
+   * @api {post} /offers Insert an offer into the database for logged in user
    * @apiGroup Offers
    * @apiName CreateOffer
-   * @apiParam {Number} userId the user id
-   * @apiParam {String} citySlug the city slug
-   * @apiParam {String} sourceCoinSymbol the coin symbol of the currency the user has
-   * @apiParam {String} destCoinSymbol the coin symbol of the currency the user wants
-   * @apiParam {Number} wantedPricePerUnit the price for the offer
-   * @apiParam {Number} amount the amount desired
-   * @apiParam {Number} [minAmount] the minimum amount the user would be interested in
+   * @apiParam {String} citySlug the city slug(lower case cities names: toronto, vancouver, ottawa)
+   * @apiParam {String} sourceCoinSymbol the coin symbol of the currency the user has(upper case cities names: USD, CAD, BRL, BTC, ETH)
+   * @apiParam {String} destCoinSymbol the coin symbol of the currency the user wants(upper case cities names: USD, CAD, BRL, BTC, ETH)
+   * @apiParam {Number} wantedPricePerUnit the price for the offer (sourceCoinSymbol isCAD, destCoinSymbol BRL, so wanted price 2.81)
+   * @apiParam {Number} amount the amount desired regarding the destCoinSymbol(you want 1000cad and have brl, this field will be 1000)
+   * @apiParam {Number} [minAmount] the minimum amount the user would be interested in(the amount is 1000 but the user may accept an offer with a lower amount)
    */
   fastify.post("/offers", async (request, reply) => {
     try {
@@ -26,18 +25,18 @@ export function setupRoutes(fastify) {
       if (!token) {
         return reply.code(401).send({ auth: false, message: 'User not logged in.' });
       }
-
-      if (!request.body.citySlug || !request.body.amount || !request.body.sourceCoinSymbol ||
-        !request.body.destCoinSymbol || !request.body.wantedPricePerUnit) {
-        logger.error('Missing field');
-        reply.code(400).send({ msg: "Missing field" });
+      const invalidPayloadMsg = isOfferPayloadNotValid(request.body);
+      if (invalidPayloadMsg) {
+        logger.error(invalidPayloadMsg);
+        return reply.code(400).send({ msg: invalidPayloadMsg });
       }
       const user: IUser = await jwt.verify(token, config.tokenSecret) as IUser;
+      
       const offer: IOffer = {
         userId: user.id,
-        citySlug: request.body.citySlug,
-        sourceCoinSymbol: request.body.sourceCoinSymbol,
-        destCoinSymbol: request.body.destCoinSymbol,
+        citySlug: request.body.city && request.body.city.trim().toLowerCase(),
+        sourceCoinSymbol: request.body.sourceCoinSymbol && request.body.sourceCoinSymbol.trim().toUpperCase(),
+        destCoinSymbol: request.body.destCoinSymbol && request.body.destCoinSymbol.trim().toUpperCase(),
         wantedPricePerUnit: request.body.wantedPricePerUnit,
         minAmount: request.body.minAmount,
         amount: request.body.amount,
@@ -61,12 +60,12 @@ export function setupRoutes(fastify) {
    * @api {put} /offers/:id Edit an offer
    * @apiGroup Offers
    * @apiName EditOffer
-   * @apiParam {String} [citySlug] the city slug
-   * @apiParam {String} [sourceCoinSymbol] the coin symbol of the currency the user has
-   * @apiParam {String} [destCoinSymbol] the coin symbol of the currency the user wants
-   * @apiParam {Number} [wantedPricePerUnit] the price for the offer
-   * @apiParam {Number} [amount] the amount desired
-   * @apiParam {Number} [minAmount] the minimum amount the user would be interested in
+   * @apiParam {String} [citySlug] the city slug(lower case cities names: toronto, vancouver, ottawa)
+   * @apiParam {String} [sourceCoinSymbol] the coin symbol of the currency the user has(upper case cities names: USD, CAD, BRL, BTC, ETH)
+   * @apiParam {String} [destCoinSymbol] the coin symbol of the currency the user wants(upper case cities names: USD, CAD, BRL, BTC, ETH)
+   * @apiParam {Number} [wantedPricePerUnit] the price for the offer (sourceCoinSymbol isCAD, destCoinSymbol BRL, so wanted price 2.81)
+   * @apiParam {Number} [amount] the amount desired regarding the destCoinSymbol(you want 1000cad and have brl, this field will be 1000)
+   * @apiParam {Number} [minAmount] the minimum amount the user would be interested in(the amount is 1000 but the user may accept an offer with a lower amount)
    */
   fastify.put("/offers/:id", async (request, reply) => {
     try {
@@ -91,9 +90,9 @@ export function setupRoutes(fastify) {
   /**
    * @api {get} /offers Returns All Offers
    * @apiGroup Offers
-   * @apiParam {String} [city] the Id
-   * @apiParam {String} [sourceCurrency] the source currency
-   * @apiParam {String} [targetCurrency] the target currency
+   * @apiParam {String} [city] the city slug(vancouver, ottawa, montreal...)
+   * @apiParam {String} [sourceCurrency] the source currency (The currency Symbol: USD, CAD, BRL, etc)
+   * @apiParam {String} [targetCurrency] the target currency (The currency Symbol: USD, CAD, BRL, etc)
    */
   fastify.get("/offers", async (request, reply) => {
     try {
@@ -116,4 +115,23 @@ export function setupRoutes(fastify) {
     }
   });
 
+}
+
+function isOfferPayloadNotValid(offer: IOffer) {
+  if (!offer.citySlug) {
+    return 'Missing field "citySlug"';
+  }
+  if (!offer.amount) {
+    return 'Missing field "amount"';
+  }
+  if (!offer.sourceCoinSymbol) {
+    return 'Missing field "sourceCoinSymbol"';
+  }
+  if (!offer.destCoinSymbol) {
+    return 'Missing field "destCoinSymbol"';
+  }
+  if (!offer.wantedPricePerUnit) {
+    return 'Missing field "wantedPricePerUnit"';
+  }
+  return null;
 }

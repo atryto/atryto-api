@@ -167,7 +167,6 @@ describe("Offers Endpoints", function() {
         destCoinSymbol: 'ETH', // coin the user wants
       };
       const queryOffer = encodeObject(lookup);
-      console.log(`queryOffer: ${queryOffer}`);
       fastify.inject({
         method: "GET",
         url: "/offers?"+queryOffer,
@@ -177,7 +176,6 @@ describe("Offers Endpoints", function() {
         expect(res.headers["content-type"]).to.be.equal("application/json");
         const offers = JSON.parse(res.payload).result;
         expect(offers).to.exist;
-        console.log(`offers: ${JSON.stringify(offers, null, 2)}`);
         expect(offers).to.have.length.above(0);
 
         let offerLookups: IOfferLookup[] = [];
@@ -185,10 +183,8 @@ describe("Offers Endpoints", function() {
         while (offerLookups.length == 0 ) {
           offerLookups = await offerLookupService.get(lookup);
         }
-        console.log(`offerLookups: ${JSON.stringify(offerLookups, null, 2)}`);
         expect(offerLookups).to.not.be.empty;
         const offerLookup: IOfferLookup = offerLookups[0];
-        console.log(`offerLookup: ${JSON.stringify(offerLookup, null, 2)}`);
         expect(offerLookup.citySlug).to.be.equal(lookup.citySlug);
         expect(offerLookup.sourceCoinSymbol).to.be.equal(lookup.sourceCoinSymbol);
         expect(offerLookup.destCoinSymbol).to.be.equal(lookup.destCoinSymbol);

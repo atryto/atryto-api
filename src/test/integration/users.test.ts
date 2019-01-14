@@ -19,10 +19,42 @@ describe("Users Endpoints", function() {
   const service = new UsersService();
   const dao = new UserDAO();
   const fastify = server.getFastify();
-  let user: IUser, token: String;
+  let user: IUser, user2: IUser, token: String, tokenUser2: String;
 
-  before( async () => { await ResetDb.run() });
-  // after( async () => { await ResetDb.run() });
+  beforeEach( async () => { 
+    await ResetDb.run();
+    // create user 1
+    await service.insert({
+      email: 'useroffer1@test.com',
+      username: 'useroffer1',
+      password: 'useroffer1password',
+      citySlug: 'toronto',
+    } as IUser);
+    // create user 2
+    await service.insert({
+      email: 'useroffer2@test.com',
+      username: 'useroffer2',
+      password: 'useroffer2password',
+      citySlug: 'toronto',
+      allowOnlineTransactions: false,
+    } as IUser);
+    // store user1 and user2
+    let users = await service.get({email: 'useroffer1@test.com'} as IUser);
+    user = users[0];
+    users = await service.get({email: 'useroffer2@test.com'} as IUser);
+    user2 = users[0];
+    // login to store token of user 1 
+    token =  await service.login({
+      email: 'useroffer1@test.com',
+      password: 'useroffer1password'
+    } as IUser);
+    // login to store token of user 2
+    tokenUser2 =  await service.login({
+      email: 'useroffer2@test.com',
+      password: 'useroffer2password'
+    } as IUser);
+  });
+  after( async () => { await ResetDb.run() });
 
   describe("POST /users", function() {
     it("Should fail because there is no citySlug defined for user", (done) => {
@@ -57,17 +89,16 @@ describe("Users Endpoints", function() {
         expect(err).to.be.null;
         expect(res.statusCode).to.be.equal(200);
         expect(res.headers["content-type"]).to.be.equal("application/json");
-        const users = await service.get({} as IUser);
+        const users = await service.get({ email: 'user@test.com' } as IUser);
         expect(users).to.have.lengthOf(1);
-        user = users[0];
-        expect(user.email).to.be.equal('user@test.com');
-        expect(user.username).to.be.equal('user1');
-        expect(user.password).to.not.exist;
+        expect(users[0].email).to.be.equal('user@test.com');
+        expect(users[0].username).to.be.equal('user1');
+        expect(users[0].password).to.not.exist;
         done();
       });
     });
-  
-    it("Should not allow SQL Injection", (done) => {
+    
+    it.only("Should not allow SQL Injection", (done) => {
       fastify.inject({
         method: "POST",
         url: "/users",
@@ -81,9 +112,9 @@ describe("Users Endpoints", function() {
         expect(err).to.be.null;
         expect(res.statusCode).to.be.equal(200);
         expect(res.headers["content-type"]).to.be.equal("application/json");
-        const users = await service.get({} as IUser);
-        expect(users).to.have.lengthOf(2);
-        const notInjectionUser = users[1];
+        const users = await service.get({ email: 'user2@test.com' } as IUser);
+        expect(users).to.have.lengthOf(1);
+        const notInjectionUser = users[0];
         expect(notInjectionUser.username).to.be.equal('user2; DELETE FROM exchanges.users;');
         done();
       });
@@ -105,7 +136,6 @@ describe("Users Endpoints", function() {
         expect(res.headers["content-type"]).to.be.equal("application/json");
         const tokenData = JSON.parse(res.payload);
         expect(tokenData).to.have.property('token');
-        token = tokenData.token;
         done();
       });
     });
@@ -163,8 +193,27 @@ describe("Users Endpoints", function() {
         done();
       });
     });
+
+    it("Should should fail if try to modify another user other than the one logged in", (done) => {
+      fastify.inject({
+        method: "PUT",
+        url: `/users/${user.id}`,
+        headers: {
+          'x-access-token': tokenUser2
+        },
+        payload: {
+          username: 'new_name',
+        },
+      }, async (err, res) => {
+        expect(res.statusCode).to.be.equal(401);
+        expect(res.payload).to.exist;
+        expect(JSON.parse(res.payload).message).to.exist;
+        expect(JSON.parse(res.payload).message).to.contain('You do not have permission to edit this user');
+        done();
+      });
+    });
     
-    it("Should be authenticated with token", (done) => {
+    it("Should be authenticated with token to edit user successfully", (done) => {
       fastify.inject({
         method: "PUT",
         url: `/users/${user.id}`,
@@ -202,6 +251,23 @@ describe("Users Endpoints", function() {
         done();
       });
     });
+
+    it("Should return 1 user filtering through field email", (done) => {
+      fastify.inject({
+        method: "GET",
+        url: "/users"
+      }, async (err, res) => {
+        expect(err).to.be.null;
+        expect(res.statusCode).to.be.equal(200);
+        expect(res.headers["content-type"]).to.be.equal("application/json");
+        expect(res.payload).to.exist;
+        const users = JSON.parse(res.payload).result;
+        expect(users).to.exist;
+        expect(users).to.have.lengthOf(2);
+        done();
+      });
+    });
+
   });
 
 });

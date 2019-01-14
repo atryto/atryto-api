@@ -9,8 +9,13 @@ export function setupRoutes(fastify) {
    * @api {post} /users Insert an user into the database
    * @apiGroup Users
    * @apiName CreateUser 
-   * @apiParam {String} email the user email
-   * @apiParam {String} name the user display name
+   * @apiParam {String} id the Id
+   * @apiParam {String} email the email
+   * @apiParam {String} username the username
+   * @apiParam {String} password the password
+   * @apiParam {String} citySlug the default city for that user
+   * @apiParam {String} [profilePictureUrl] the profile picture URL
+   * @apiParam {Boolean} [allowOnlineTransactions] flag to check whether use will allow online transactions
    * * @apiParam {String} password the user password
    */
   fastify.post("/users", async (request, reply) => {
@@ -23,6 +28,7 @@ export function setupRoutes(fastify) {
       const user: IUser = request.body;
       const userService = new UsersService();
       const result = await userService.insert(user);
+      console.log(`ROUTE result: ${JSON.stringify(result)}`);
       reply.code(200).send(result);
       logger.info(`User insertion: ${JSON.stringify(result)}`);
     } catch (error) {
@@ -35,19 +41,15 @@ export function setupRoutes(fastify) {
    * @api {post} /users/login Login Returns a valid token
    * @apiGroup Users
    * @apiName Login
-   * @apiParam {String} id the Id
-   * @apiParam {String} email the email
-   * @apiParam {String} username the username
    * @apiParam {String} password the password
-   * @apiParam {String} citySlug the default city for that user
-   * @apiParam {String} [profilePictureUrl] the profile picture URL
-   * @apiParam {Boolean} [allowOnlineTransactions] flag to check whether use will allow online transactions
-   */
+   * @apiParam {String} [email] the email(mandatory is there is no field username)
+   * @apiParam {String} [username] the username(mandatory is there is no field email)
+   **/
   fastify.post("/users/login", async (request, reply) => {
     try {
       if (!request.body || (!request.body.email && !request.body.username) || !request.body.password) {
         logger.error('Missing field');
-        reply.code(400).send({ msg: "Missing field" });
+        return reply.code(400).send({ msg: "Missing field" });
       }
       const user: IUser = request.body;
       const userService = new UsersService();
