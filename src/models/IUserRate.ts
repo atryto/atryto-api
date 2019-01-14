@@ -1,8 +1,8 @@
 import ITimestamp from "./iTimestamp";
 
 interface IUserRate extends ITimestamp {
-  userid?: number;
-  rateruserid?: number;
+  userId?: number;
+  raterUserId?: number;
   grade?: number;
 }
 export default IUserRate;

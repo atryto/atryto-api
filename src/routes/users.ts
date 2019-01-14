@@ -8,6 +8,7 @@ export function setupRoutes(fastify) {
   /**
    * @api {post} /users Insert an user into the database
    * @apiGroup Users
+   * @apiName CreateUser 
    * @apiParam {String} email the user email
    * @apiParam {String} name the user display name
    * * @apiParam {String} password the user password
@@ -33,8 +34,14 @@ export function setupRoutes(fastify) {
   /**
    * @api {post} /users/login Login Returns a valid token
    * @apiGroup Users
-   * @apiParam {String} email the user email
-   * @apiParam {String} password the user password
+   * @apiName Login
+   * @apiParam {String} id the Id
+   * @apiParam {String} email the email
+   * @apiParam {String} username the username
+   * @apiParam {String} password the password
+   * @apiParam {String} citySlug the default city for that user
+   * @apiParam {String} [profilePictureUrl] the profile picture URL
+   * @apiParam {Boolean} [allowOnlineTransactions] flag to check whether use will allow online transactions
    */
   fastify.post("/users/login", async (request, reply) => {
     try {
@@ -56,7 +63,14 @@ export function setupRoutes(fastify) {
   /**
    * @api {get} /users Returns All Users
    * @apiGroup Users
-   * @apiParam {String} id the Id
+   * @apiName GetUsers
+   * @apiParam {String} [id] the Id
+   * @apiParam {String} [email] the email
+   * @apiParam {String} [username] the username
+   * @apiParam {String} [password] the password
+   * @apiParam {String} [profilePictureUrl] the profile picture URL
+   * @apiParam {String} [citySlug] the default city for that user
+   * @apiParam {Boolean} [allowOnlineTransactions] flag to check whether use will allow online transactions
    */
   fastify.get("/users", async (request, reply) => {
     try {
@@ -73,8 +87,9 @@ export function setupRoutes(fastify) {
   });
 
   /**
-   * @api {get} /users/:id Returns a user according to the id
+   * @api {get} /users/:id Returns an user by its id
    * @apiGroup Users
+   * @apiName GetUserById
    * @apiParam {String} id the Id
    */
   fastify.get("/users/:id", async (request, reply) => {
@@ -94,9 +109,14 @@ export function setupRoutes(fastify) {
   });
 
   /**
-   * @api {put} /users Edit a user that will be find out according to the token
+   * @api {put} /users/:id Edit a user that will be find out according to the token
    * @apiGroup Users
+   * @apiName EditUser
    * @apiParam {String} id the Id
+   * @apiParam {String} [password] the password
+   * @apiParam {String} [profilePictureUrl] the profile picture URL
+   * @apiParam {String} [citySlug] the default city for that user
+   * @apiParam {Boolean} [allowOnlineTransactions] flag to check whether use will allow online transactions
    */
   fastify.put("/users/:id", async (request, reply) => {
     try {
@@ -111,6 +131,10 @@ export function setupRoutes(fastify) {
       if (!user) {
         return reply.code(401).send({ auth: false, message: 'Failed to authenticate token.' });
       }
+      // TO DO: We need to create role for users so admins can also edit users
+      if (request.params.id != user.id) {
+        return reply.code(401).send({ auth: false, message: 'You do not have permission to edit this user.' });
+      }
       
       const userService = new UsersService();
       const updatedUser = await userService.update(request.params.id, request.body);
@@ -124,6 +148,8 @@ export function setupRoutes(fastify) {
   /**
    * @api {delete} /users Deletes a logged in user
    * @apiGroup Users
+   * @apiName DeleteUser
+   * @apiParam {String} id the Id
    */
   fastify.delete("/users", async (request, reply) => {
     try {

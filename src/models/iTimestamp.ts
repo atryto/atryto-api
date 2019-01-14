@@ -1,7 +1,8 @@
 import ISequence from "./ISequence";
 
 interface ITimestamp extends ISequence {
-  createdat?: number;
-  updatedat?: number;
+  createdAt?: number;
+  updatedAt?: number;
+  deletedAt?: number;
 }
 export default ITimestamp;

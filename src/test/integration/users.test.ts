@@ -22,9 +22,10 @@ describe("Users Endpoints", function() {
   let user: IUser, token: String;
 
   before( async () => { await ResetDb.run() });
+  // after( async () => { await ResetDb.run() });
 
   describe("POST /users", function() {
-    it("Should fail because there is no cityslug defined for user", (done) => {
+    it("Should fail because there is no citySlug defined for user", (done) => {
       fastify.inject({
         method: "POST",
         url: "/users",
@@ -37,7 +38,7 @@ describe("Users Endpoints", function() {
         expect(res.statusCode).to.be.equal(500);
         expect(res.payload).to.exist;
         expect(JSON.parse(res.payload).message).to.exist;
-        expect(JSON.parse(res.payload).message).to.contain('ER_NO_DEFAULT_FOR_FIELD: Field \'cityslug\'');
+        expect(JSON.parse(res.payload).message).to.contain('ER_NO_DEFAULT_FOR_FIELD: Field \'citySlug\'');
         done();
       });
     });
@@ -50,7 +51,7 @@ describe("Users Endpoints", function() {
           email: 'user@test.com',
           username: 'user1',
           password: 'test',
-          cityslug: 'toronto',
+          citySlug: 'toronto',
         },
       }, async (err, res) => {
         expect(err).to.be.null;
@@ -74,7 +75,7 @@ describe("Users Endpoints", function() {
           email: 'user2@test.com',
           username: 'user2; DELETE FROM exchanges.users;',
           password: 'test',
-          cityslug: 'toronto',
+          citySlug: 'toronto',
         },
       }, async (err, res) => {
         expect(err).to.be.null;
@@ -171,13 +172,13 @@ describe("Users Endpoints", function() {
           'x-access-token': token
         },
         payload: {
-          cityslug: 'vancouver',
+          citySlug: 'vancouver',
         },
       }, async (err, res) => {
         expect(err).to.be.null;
         expect(res.statusCode).to.be.equal(200);
         const updatedUser = await dao.getById(user.id);
-        expect(user.cityslug).to.not.equal(updatedUser.cityslug);
+        expect(user.citySlug).to.not.equal(updatedUser.citySlug);
         expect(res.headers["content-type"]).to.be.equal("application/json");
         done();
       });

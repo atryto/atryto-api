@@ -40,7 +40,7 @@ export default class AbstractCrudDAO<T extends ISequence> {
   public async update(id: number, model: T) {
     const foundModel = await this.getById(id);
     if (!foundModel) {
-      throw new Error('Not found');
+      throw Error('Not found');
     }
     let updateQuery = ` UPDATE ${config.database.schema}.${this.dbTableName} `;
     const valuesToUpdate = [];

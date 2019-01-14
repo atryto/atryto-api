@@ -1,8 +1,8 @@
 import ITimestamp from "./iTimestamp";
 
 interface IOfferLookup extends ITimestamp {
-  cityslug?: string;
-  sourcecoinsymbol?: string;
-  destcoinsymbol?: string;
+  citySlug?: string;
+  sourceCoinSymbol?: string;
+  destCoinSymbol?: string;
 }
 export default IOfferLookup;

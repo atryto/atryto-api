@@ -5,6 +5,7 @@ export function setupRoutes(fastify) {
   /**
    * @api {get} /ping Healthcheck endpoint
    * @apiGroup Healtcheck
+   * @apiName Ping
    */
   fastify.get("/ping", (request, reply) => {
     logger.info("Ping completed successfully");
