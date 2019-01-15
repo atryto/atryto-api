@@ -4,6 +4,13 @@ Public API for the Atryto Platform
 
 ## Usage
 
+### Using Docker
+
+- install [Docker](https://www.docker.com/get-started)
+- `npm run docker-compose` or `docker-compose up`
+
+### Without docker
+
 to start the api, you'll need to at least to install [flyway](https://flywaydb.org) and set the flyway environment variables, here's how to do this in mac:
 
 - `brew install fly`,
@@ -51,7 +58,7 @@ To run the project locally run:
 - `npm run build`
 - `npm start`(this one already runs the build so you can skip the second command)
 
-If you want your project to be updated every change you make, just use:
+If you want your project to be updated every change you make and keep restarting, just use:
 
 - `npm run watch` instead of `npm start`.
 
@@ -83,7 +90,7 @@ To only run the unit tests:
 
 - `npm install`
 - `npm run build`
-- `npm run tests`(this one already runs the build so you can skip the second command)
+- `npm run test`(this one already runs the build so you can skip the second command)
 
 We are using [istanbul](https://github.com/gotwarlost/istanbul) to code coverage.
 
@@ -134,7 +141,7 @@ To run the TSLint, do:
 
 ## Before commiting
 
-Just commit if everythings is ok with the following commands:
+Check whether tests are passing and coding is according to tslint(style guide)
 
-- `npm run tests`
+- `npm run test`
 - `npm run tslint`
