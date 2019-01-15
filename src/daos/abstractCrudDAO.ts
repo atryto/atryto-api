@@ -13,16 +13,6 @@ export default class AbstractCrudDAO<T extends ISequence> {
     this.dbTableName = dbTableName;
   }
 
-  protected async prepareStatement(model: any, tableName: String) {
-    const prepare = `PREPARE stmt FROM 'INSERT INTO ${config.database.schema}.${tableName} ` +
-                      `(${Object.keys(model)}) values (${Object.keys(model).map(t => "?")})';`;
-    await this.db.queryWrite(prepare, []);
-    const setParams =Object.keys(model).map((key) => {return "SET @"+key+ "=?;"}).join("");
-    await this.db.queryWrite(setParams, Object.values(model));
-    const execute = "EXECUTE stmt USING " + Object.keys(model).map(key => "@" + key) + ";";
-    return this.db.queryWrite(execute, []);
-  }
-
   protected async insertQuery(model: any, tableName: String) {
     const prepare = `PREPARE stmt FROM 'INSERT INTO ${config.database.schema}.${tableName} ` +
                       `(${Object.keys(model)}) values (${Object.keys(model).map(t => "?")})';`;

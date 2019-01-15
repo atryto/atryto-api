@@ -34,7 +34,7 @@ export function setupRoutes(fastify) {
       
       const offer: IOffer = {
         userId: user.id,
-        citySlug: request.body.city && request.body.city.trim().toLowerCase(),
+        citySlug: request.body.citySlug && request.body.citySlug.trim().toLowerCase(),
         sourceCoinSymbol: request.body.sourceCoinSymbol && request.body.sourceCoinSymbol.trim().toUpperCase(),
         destCoinSymbol: request.body.destCoinSymbol && request.body.destCoinSymbol.trim().toUpperCase(),
         wantedPricePerUnit: request.body.wantedPricePerUnit,
