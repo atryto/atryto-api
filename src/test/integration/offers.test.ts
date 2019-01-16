@@ -59,9 +59,9 @@ describe("Offers Endpoints", function() {
   });
   // after( async () => { await ResetDb.run() });
 
-  describe("Testing offer types", function() {
+  describe("Offers", function() {
 
-    it("Type BUY -> User1 wants to Buy 1500USD with CAD at a rate of 1.30CAD per USD", (done) => {
+    it("User1 wants to Buy 1500USD with CAD at a rate of 1.30CAD per USD", (done) => {
       const offer: IOffer = {
         userId: user1.id,
         citySlug: 'toronto',
@@ -93,7 +93,7 @@ describe("Offers Endpoints", function() {
       });
     });
 
-    it("Type SELL -> User1 wants to Sell 500CAD for USD at a rate of 1.30 CAD per usd", (done) => {
+    it("User1 wants to Sell 500CAD for USD at a rate of 1.30 CAD per usd", (done) => {
       const offer: IOffer = {
         userId: user1.id,
         citySlug: 'toronto',
@@ -125,7 +125,7 @@ describe("Offers Endpoints", function() {
       });
     });
 
-    it("Type EXCHANGE -> User1 wants to EXCHANGE 4BTC for ETH at a rate of 7.5ETH per BTC", (done) => {
+    it("User1 wants to EXCHANGE 4BTC for ETH at a rate of 7.5ETH per BTC", (done) => {
       const offer: IOffer = {
         userId: user1.id,
         citySlug: 'toronto',
@@ -161,33 +161,38 @@ describe("Offers Endpoints", function() {
 
   describe("Testing offer lookups", function() {
     it("Whenever someone looks for a coin in the platform we add that lookup", (done) => {
-      const lookup: IOfferLookup = {
+      const clientRequestFields = {
+        city: 'toronto',
+        sourceCurrency: 'BTC', // coin the user has
+        targetCurrency: 'ETH', // coin the user wants
+      };
+      const dbRequestFields = {
         citySlug: 'toronto',
         sourceCoinSymbol: 'BTC', // coin the user has
         destCoinSymbol: 'ETH', // coin the user wants
       };
-      const queryOffer = encodeObject(lookup);
+      const queryOffer = encodeObject(clientRequestFields);
       fastify.inject({
         method: "GET",
         url: "/offers?"+queryOffer,
       }, async (err, res) => {
+        console.log(0);
         expect(err).to.be.null;
+        console.log(1);
         expect(res.statusCode).to.be.equal(200);
+        console.log(2);
         expect(res.headers["content-type"]).to.be.equal("application/json");
-        const offers = JSON.parse(res.payload).result;
-        expect(offers).to.exist;
-        expect(offers).to.have.length.above(0);
+        console.log(3);
 
         let offerLookups: IOfferLookup[] = [];
         // OfferLookup is executed asynchronously so we wait
         while (offerLookups.length == 0 ) {
-          offerLookups = await offerLookupService.get(lookup);
+          offerLookups = await offerLookupService.get(dbRequestFields as IOffer);
         }
-        expect(offerLookups).to.not.be.empty;
         const offerLookup: IOfferLookup = offerLookups[0];
-        expect(offerLookup.citySlug).to.be.equal(lookup.citySlug);
-        expect(offerLookup.sourceCoinSymbol).to.be.equal(lookup.sourceCoinSymbol);
-        expect(offerLookup.destCoinSymbol).to.be.equal(lookup.destCoinSymbol);
+        expect(offerLookup.citySlug).to.be.equal(clientRequestFields.city);
+        expect(offerLookup.sourceCoinSymbol).to.be.equal(clientRequestFields.sourceCurrency);
+        expect(offerLookup.destCoinSymbol).to.be.equal(clientRequestFields.targetCurrency);
         done();
       });
     });

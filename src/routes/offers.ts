@@ -102,12 +102,13 @@ export function setupRoutes(fastify) {
         sourceCoinSymbol: request.query.sourceCurrency && request.query.sourceCurrency.trim().toUpperCase(),
         destCoinSymbol: request.query.targetCurrency && request.query.targetCurrency.trim().toUpperCase(),
       }
+      console.log(`offers rout query: ${JSON.stringify(query, null,2)}`);
       const offers = await offerService.get(query);
       const response = { result: offers };
       reply.code(200).send(response);
       // asynchronously inserting OfferLookup
       const offerLookupService = new OfferLookupsService();
-      const dbOfferLookup = offerLookupService.insert(query);
+      const dbOfferLookup = await offerLookupService.insert(query);
       logger.info(`inserting OfferLookup : ${JSON.stringify(dbOfferLookup)}`);
     } catch (error) {
       reply.code(500).send(error);
