@@ -19,25 +19,27 @@ describe("Users Endpoints", function() {
   const service = new UsersService();
   const dao = new UserDAO();
   const fastify = server.getFastify();
-  let user: IUser, user2: IUser, token: String, tokenUser2: String;
+  let user: IUser, user2: IUser, token: String, tokenUser2: String, userRaw: IUser, user2Raw: IUser;
 
   beforeEach( async () => { 
     await ResetDb.run();
     // create user 1
-    await service.insert({
+    userRaw = {
       email: 'useroffer1@test.com',
       username: 'useroffer1',
       password: 'useroffer1password',
       citySlug: 'toronto',
-    } as IUser);
+    } as IUser;
+    await service.insert(userRaw);
     // create user 2
-    await service.insert({
+    user2Raw = {
       email: 'useroffer2@test.com',
       username: 'useroffer2',
       password: 'useroffer2password',
       citySlug: 'toronto',
       allowOnlineTransactions: false,
-    } as IUser);
+    } as IUser;
+    await service.insert(user2Raw);
     // store user1 and user2
     let users = await service.get({email: 'useroffer1@test.com'} as IUser);
     user = users[0];
@@ -98,7 +100,7 @@ describe("Users Endpoints", function() {
       });
     });
     
-    it.only("Should not allow SQL Injection", (done) => {
+    it("Should not allow SQL Injection", (done) => {
       fastify.inject({
         method: "POST",
         url: "/users",
@@ -127,8 +129,10 @@ describe("Users Endpoints", function() {
         method: "POST",
         url: "/users/login",
         payload: {
-          email: 'user@test.com',
-          password: 'test'
+          // email: userRaw.email,
+          // password: userRaw.password
+          email: 'useroffer1@test.com',
+          password: 'useroffer1password',
         },
       }, async (err, res) => {
         expect(err).to.be.null;

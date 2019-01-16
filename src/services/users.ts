@@ -51,7 +51,7 @@ export default class UsersService extends AbstractService<IUser> {
       const dbUser: IUser = users[0];
       const checkPassword = await bcrypt.compare(user.password, dbUser.password);
       if (!checkPassword) {
-        throw Error('Password invalid');
+        throw Error('Invalid password.');
       }
       const {password, ...modUser} = dbUser;
       // create a token
