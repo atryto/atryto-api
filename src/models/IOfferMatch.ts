@@ -1,12 +1,7 @@
 import ITimestamp from "./iTimestamp";
 
-interface IOffer extends ITimestamp {
+interface IOfferMatch extends ITimestamp {
   userId?: number;
-  citySlug?: string;
-  sourceCoinSymbol?: string;
-  destCoinSymbol?: string;
-  wantedPricePerUnit?: number;
-  minAmount?: number;
-  amount?: number;
+  offerId?: number;
 }
-export default IOffer;
+export default IOfferMatch;

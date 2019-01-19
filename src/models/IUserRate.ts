@@ -1,6 +1,6 @@
-import ITimestamp from "./iTimestamp";
+import ITimestampSequence from "./iTimestampSequence";
 
-interface IUserRate extends ITimestamp {
+interface IUserRate extends ITimestampSequence {
   userId?: number;
   raterUserId?: number;
   grade?: number;

@@ -1,6 +1,6 @@
-import ITimestamp from "./iTimestamp";
+import ITimestampSequence from "./iTimestampSequence";
 
-interface ICoin extends ITimestamp {
+interface ICoin extends ITimestampSequence {
   name: string;
   symbol: string;
   logoUrl: string;

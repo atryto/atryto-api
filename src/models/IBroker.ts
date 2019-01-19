@@ -1,6 +1,6 @@
-import ITimestamp from "./iTimestamp";
+import ITimestampSequence from "./iTimestampSequence";
 
-interface IBroker extends ITimestamp {
+interface IBroker extends ITimestampSequence {
   userId: number;
   website: string;
 }

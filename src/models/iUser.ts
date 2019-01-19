@@ -1,6 +1,6 @@
-import ITimestamp from "./iTimestamp";
+import ITimestampSequence from "./iTimestampSequence";
 
-interface IUser extends ITimestamp {
+interface IUser extends ITimestampSequence {
   email?: string;
   username?: string;
   password?: string;

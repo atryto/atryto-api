@@ -1,6 +1,6 @@
-import ITimestamp from "./iTimestamp";
+import ITimestampSequence from "./iTimestampSequence";
 
-interface IOffer extends ITimestamp {
+interface IOffer extends ITimestampSequence {
   userId?: number;
   citySlug?: string;
   sourceCoinSymbol?: string;

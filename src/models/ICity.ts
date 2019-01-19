@@ -1,6 +1,6 @@
-import ITimestamp from "./iTimestamp";
+import ITimestampSequence from "./iTimestampSequence";
 
-interface ICity extends ITimestamp {
+interface ICity extends ITimestampSequence {
   slug: string;
   name: string;
   country: string;
