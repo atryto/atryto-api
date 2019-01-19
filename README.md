@@ -4,8 +4,6 @@ Public API for the Atryto Platform
 
 ## Usage
 
-- `npm install`
-
 ### Using Docker
 
 - install [Docker](https://www.docker.com/get-started)
@@ -17,6 +15,7 @@ to start the api, you'll need to at least to install [flyway](https://flywaydb.o
 
 - Install [Mysql 5.7](https://www.mysql.com/downloads/), for mac with brew `brew install mysql@5.7`
 - Install flyway, for mac with brew: `brew install fly` , otherwise check the [flyway website](https://flywaydb.org))
+- `npm install`
 - `npm run dev-init-db`
 
 Then after that, to run the api itself just do:
@@ -61,7 +60,8 @@ We are using the following tools:
 
 - [Fastify](https://github.com/fastify/fastify) as the main Nodejs framework
 - [Typescript](https://www.typescriptlang.org/)
-- [Tape](https://github.com/substack/tape) as the test framework
+- [Mocha](https://mochajs.org/) as the test framework
+- [Chai](https://www.chaijs.com/) as the test framework
 - [TSLint](https://palantir.github.io/tslint/)
 - [Docker](https://www.docker.com/what-docker)
 - [ApiDoc](http://apidocjs.com/) to automatically generate documentation

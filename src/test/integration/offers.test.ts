@@ -4,7 +4,6 @@ import IUser from "../../models/iUser";
 import "mocha";
 import UsersService from "../../services/users";
 import ResetDb from "../resetDb";
-import { inspect } from "util";
 import IOffer from "../../models/IOffer";
 import OffersService from "../../services/offers";
 import IOfferLookup from "../../models/IOfferLookup";
