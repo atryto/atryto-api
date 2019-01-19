@@ -12,7 +12,7 @@ services:
       MYSQL_USER: dbuser
       MYSQL_PASSWORD: dbp4ss 
 
-  backend:
+  api:
     build: .
     ports:
         - "3000:3000"
@@ -29,13 +29,3 @@ services:
       FLYWAY_USER: root
       FLYWAY_PASSWORD: p4SSW0rd
       FLYWAY_SCHEMAS: exchange
-
-  frontend:
-    build: ../frontend/
-    ports:
-      - "8081:8080"
-    depends_on:
-      - "backend"
-    environment:
-      NODE_ENV: development
-      API_URL: backend:3000

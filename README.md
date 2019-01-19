@@ -4,6 +4,8 @@ Public API for the Atryto Platform
 
 ## Usage
 
+- `npm install`
+
 ### Using Docker
 
 - install [Docker](https://www.docker.com/get-started)
@@ -13,17 +15,15 @@ Public API for the Atryto Platform
 
 to start the api, you'll need to at least to install [flyway](https://flywaydb.org) and set the flyway environment variables, here's how to do this in mac:
 
-- `brew install fly`,
-- `export FLYWAY_URL=jdbc:mysql://127.0.0.1:3306 FLYWAY_USER=root FLYWAY_PASSWORD=root FLYWAY_SCHEMAS=exchange`
+- Install [Mysql 5.7](https://www.mysql.com/downloads/), for mac with brew `brew install mysql@5.7`
+- Install flyway, for mac with brew: `brew install fly` , otherwise check the [flyway website](https://flywaydb.org))
+- `npm run dev-init-db`
 
 Then after that, to run the api itself just do:
 
 - `npm start`
-
-If you prefer using pm2, you can run:
-
-- `npm run init-db`
-- `npm run watch`
+OR 
+- `npm run watch` 
 
 ### Environment variables
 
@@ -37,14 +37,17 @@ You can get the variables straight from heroku(just in case you have access)
 - `cp .env.staging .env` to connect to the staging API
 - `cp .env.local .env` to connect to the API running locally
 
-
-## Endpoints
-
-### POST /users
-
 ## Database Migrations and versioning
 
-We are using [flyway](https://flywaydb.org) to run database scripts and keep the versions. Right now we created the script `init-db` on the package.json file, but we don't need to run it manually because everytime the command `npm start` is executed, it automatically calls this script and then generate the database with its data(if any).
+We are using [flyway](https://flywaydb.org) to support migrations.
+
+### migrating locally
+    - using docker:
+        - with docker, the migration will happen automatically so all you need to run is:
+            - `docker-compose up` or `docker-compose build && docker-compose up`(if you want to rebuild the images)
+    - without docker:
+        - local development: `npm run dev-init-db` 
+        - test: `npm run dev-init-db-test` 
 
 ## Useful curl commands
 
