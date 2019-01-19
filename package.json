@@ -8,7 +8,7 @@
     "test": " node_modules/.bin/nyc node_modules/.bin/mocha -r ts-node/register src/**/*.test.ts --exit",
     "create-db-and-test": "npm run dev-init-db-test && DB_SCHEMAS=exchange_test npm run test",
     "code-coverage": "node_modules/.bin/nyc report --reporter=text",
-    "start": "npm run build && npm run init-db && node bin/server.js",
+    "start": "npm run build && node bin/server.js",
     "watch": "node node_modules/typescript/bin/tsc && ./node_modules/concurrently/src/main.js \"node node_modules/typescript/bin/tsc -w --outDir bin\" \"node_modules/pm2/bin/pm2 start bin/server.js --watch --no-daemon\" ",
     "build-docker": "docker build -t atryto-api:latest .",
     "build-compose": "npm run build-docker && docker-compose up",
@@ -24,8 +24,10 @@
     "init-db": "flyway -locations=filesystem:bin/database-schemas migrate",
     "dev-init-db": "FLYWAY_URL=jdbc:mysql://127.0.0.1:3306 FLYWAY_USER=root FLYWAY_PASSWORD=root FLYWAY_SCHEMAS=exchange flyway -locations=filesystem:src/database-schemas migrate",
     "dev-init-db-test": "FLYWAY_URL=jdbc:mysql://127.0.0.1:3306 FLYWAY_USER=root FLYWAY_PASSWORD=root FLYWAY_SCHEMAS=exchange_test flyway -locations=filesystem:src/database-schemas migrate",
-    "deploy:staging": "NODE_ENV=staging sh scripts/migrate_db.sh && git push staging master",
-    "deploy:prod": "NODE_ENV=prod sh scripts/migrate_db.sh && git push prod master"
+    "migrate-db-staging": "NODE_ENV=staging sh scripts/migrate_db.sh",
+    "migrate-db-prod": "NODE_ENV=prod sh scripts/migrate_db.sh",
+    "deploy:staging": "npm run migrate-db-staging && git push staging master",
+    "deploy:prod": "npm run migrate-db-prod && git push prod master"
   },
   "nyc": {
     "extension": [
