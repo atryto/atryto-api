@@ -30,7 +30,7 @@ If you prefer using pm2, you can run:
 ### Heroku
 You can get the variables straight from heroku(just in case you have access)
 - to copy config vars from heroku in Staging: `heroku config -s -a atryto-api-staging > .env.staging`
-- to copy config vars from heroku in Staging: `heroku config -s -a atryto-api > .env.prod`
+- to copy config vars from heroku in Staging: `heroku config -s -a atryto-api-prod > .env.prod`
 
 ### Copy .env.ENVIRONMENT to .env
 

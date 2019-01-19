@@ -12,8 +12,6 @@ dotenv.config();
 const logger: any = require("pino")({ level: config.logLevel });
 
 type Fastify = FastifyInstance<Server, IncomingMessage, ServerResponse>;
-type FastifyReq = FastifyRequest<IncomingMessage>;
-type FastifyRes = FastifyReply<ServerResponse>;
 
 export default class App {
   private fastify: Fastify;
