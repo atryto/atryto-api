@@ -25,6 +25,19 @@ If you prefer using pm2, you can run:
 - `npm run init-db`
 - `npm run watch`
 
+### Environment variables
+
+### Heroku
+You can get the variables straight from heroku(just in case you have access)
+- to copy config vars from heroku in Staging: `heroku config -s -a atryto-api-staging > .env.staging`
+- to copy config vars from heroku in Staging: `heroku config -s -a atryto-api > .env.prod`
+
+### Copy .env.ENVIRONMENT to .env
+
+- `cp .env.staging .env` to connect to the staging API
+- `cp .env.local .env` to connect to the API running locally
+
+
 ## Endpoints
 
 ### POST /users

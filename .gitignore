@@ -10,3 +10,8 @@ bin
 .nyc_output/
 mochawesome-report/
 aws/.terraform
+.env
+.env.*
+!.env.local
+!.env.development
+!.env.test

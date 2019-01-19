@@ -6,7 +6,9 @@ import Db from "./globals/db";
 import * as pingRoutes from "./routes/ping";
 import * as userRoutes from "./routes/users";
 import * as offerRoutes from "./routes/offers";
+import * as dotenv from 'dotenv';
 
+dotenv.config();
 const logger: any = require("pino")({ level: config.logLevel });
 
 type Fastify = FastifyInstance<Server, IncomingMessage, ServerResponse>;

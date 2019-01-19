@@ -54,6 +54,7 @@
     "chai": "4.1.2",
     "concurrently": "3.5.1",
     "cors": "^2.8.4",
+    "dotenv": "^6.2.0",
     "fastify": "1.2.1",
     "fastify-cli": "0.15.1",
     "jsonwebtoken": "^8.3.0",
