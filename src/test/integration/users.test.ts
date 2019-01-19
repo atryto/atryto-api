@@ -129,8 +129,6 @@ describe("Users Endpoints", function() {
         method: "POST",
         url: "/users/login",
         payload: {
-          // email: userRaw.email,
-          // password: userRaw.password
           email: 'useroffer1@test.com',
           password: 'useroffer1password',
         },
