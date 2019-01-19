@@ -23,7 +23,8 @@
     "tslint": "node_modules/tslint/bin/tslint './src/**/**/*.ts'",
     "init-db": "flyway -locations=filesystem:src/database-schemas migrate",
     "dev-init-db": "FLYWAY_URL=jdbc:mysql://127.0.0.1:3306 FLYWAY_USER=root FLYWAY_PASSWORD=root FLYWAY_SCHEMAS=exchange flyway -locations=filesystem:src/database-schemas migrate",
-    "dev-init-db-test": "FLYWAY_URL=jdbc:mysql://127.0.0.1:3306 FLYWAY_USER=root FLYWAY_PASSWORD=root FLYWAY_SCHEMAS=exchange_test flyway -locations=filesystem:src/database-schemas migrate"
+    "dev-init-db-test": "FLYWAY_URL=jdbc:mysql://127.0.0.1:3306 FLYWAY_USER=root FLYWAY_PASSWORD=root FLYWAY_SCHEMAS=exchange_test flyway -locations=filesystem:src/database-schemas migrate",
+    "deploy": "git push heroku master"
   },
   "nyc": {
     "extension": [
@@ -60,6 +61,7 @@
     "mochawesome": "3.0.2",
     "moment": "^2.23.0",
     "mysql": "2.15.0",
+    "node-flywaydb": "^0.1.6",
     "nyc": "11.4.1",
     "pino": "4.15.4",
     "pm2": "2.10.1",
