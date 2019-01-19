@@ -57,9 +57,9 @@ export function setupRoutes(fastify) {
    * @api {post} /offers/:offerId/match When the logged in user "takes" or "matches" the offer
    * @apiGroup Offers
    * @apiName CreateOfferMatch
-   * @apiParam {Number} offerId the of the offer to be taken
+   * @apiParam {Number} id the id the offer to be taken
    */
-  fastify.post("/offers/:offerId/match", async (request, reply) => {
+  fastify.post("/offers/:id/match", async (request, reply) => {
     try {
       const token = request.headers['x-access-token'];
       if (!token) {
