@@ -4,6 +4,8 @@ import IUser from "../models/iUser";
 import OffersService from "../services/offers";
 import IOffer from "../models/IOffer";
 import OfferLookupsService from "../services/offerLookups";
+import IOfferMatch from "../models/IOfferMatch";
+import OfferMatchesService from "../services/offerMatches";
 const logger: any = require("pino")({ level: config.logLevel });
 
 export function setupRoutes(fastify) {
@@ -40,11 +42,39 @@ export function setupRoutes(fastify) {
         wantedPricePerUnit: request.body.wantedPricePerUnit,
         minAmount: request.body.minAmount,
         amount: request.body.amount,
-      }
+      };
       const service = new OffersService();
       const result = await service.insert(offer);
       reply.code(200).send(result);
       logger.info(`Offer insertion: ${JSON.stringify(result)}`);
+    } catch (error) {
+      reply.code(500).send(error);
+      logger.error(error);
+    }
+  });
+
+  /**
+   * @api {post} /offers/:offerId/match When the logged in user "takes" or "matches" the offer
+   * @apiGroup Offers
+   * @apiName CreateOfferMatch
+   * @apiParam {Number} offerId the of the offer to be taken
+   */
+  fastify.post("/offers/:offerId/match", async (request, reply) => {
+    try {
+      const token = request.headers['x-access-token'];
+      if (!token) {
+        return reply.code(401).send({ auth: false, message: 'User not logged in.' });
+      }
+      const user: IUser = await jwt.verify(token, config.tokenSecret) as IUser;
+      
+      const offerMatch: IOfferMatch = {
+        userId: user.id,
+        offerId: request.params.id,
+      };
+      const service = new OfferMatchesService();
+      const result = await service.insert(offerMatch);
+      reply.code(200).send(result);
+      logger.info(`OfferMatch insertion: ${JSON.stringify(result)}`);
     } catch (error) {
       reply.code(500).send(error);
       logger.error(error);
