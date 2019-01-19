@@ -4,7 +4,7 @@
   "description": "Atryto 2 Exchange Public API",
   "main": "server.js",
   "scripts": {
-    "build": "node node_modules/typescript/bin/tsc",
+    "build": "node node_modules/typescript/bin/tsc && mkdir -p bin/database-schemas/ && cp -a src/database-schemas/. bin/database-schemas/",
     "test": " node_modules/.bin/nyc node_modules/.bin/mocha -r ts-node/register src/**/*.test.ts --exit",
     "create-db-and-test": "npm run dev-init-db-test && DB_SCHEMAS=exchange_test npm run test",
     "code-coverage": "node_modules/.bin/nyc report --reporter=text",
