@@ -14,6 +14,8 @@ export default {
   host: process.env.HOST || "0.0.0.0",
   logLevel: process.env.LOG_LEVEL || "info",
   port: process.env.PORT || "3000",
-  passwordSalt: parseInt(process.env.PASSWORD_SALT) || 10,
-  tokenSecret: process.env.TOKEN_SECRET || 'JWT-TOKEN-SECRET',
+  passwordSalt: parseInt(process.env.PASSWORD_SALT, 10) || 10,
+  tokenSecret: process.env.TOKEN_SECRET || "JWT-TOKEN-SECRET",
+  mailgunKey: process.env.MAILGUN_KEY || "mail-gun-key",
+  mailgunDomain: process.env.MAILGUN_DOMAIN || "mail-gun-domain",
 };
