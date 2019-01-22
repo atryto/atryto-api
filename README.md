@@ -11,10 +11,7 @@ Public API for the Atryto Platform
 
 ### Without docker
 
-to start the api, you'll need to at least to install [flyway](https://flywaydb.org) and set the flyway environment variables, here's how to do this in mac:
-
 - Install [Mysql 5.7](https://www.mysql.com/downloads/), for mac with brew `brew install mysql@5.7`
-- Install flyway, for mac with brew: `brew install fly` , otherwise check the [flyway website](https://flywaydb.org))
 - `npm install`
 - `npm run dev-init-db`
 
@@ -38,18 +35,16 @@ You can get the variables straight from heroku(just in case you have access)
 
 ## Database Migrations and versioning
 
-We are using [flyway](https://flywaydb.org) to support migrations.
+We are using an ORM called [sequelize](http://docs.sequelizejs.com/) that is also responsible for migrations.
 
 ### migrating locally
     - using docker:
         - with docker, the migration will happen automatically so all you need to run is:
             - `docker-compose up` or `docker-compose build && docker-compose up`(if you want to rebuild the images)
     - without docker:
-        - local development: `npm run dev-init-db` 
-        - test: `npm run dev-init-db-test` 
+        - `npm run db:migrate && npm run db:seed`
 
 ## Useful curl commands
-
 
 - Users
     - `curl -H "Content-Type: application/json" -X POST --data '{"email": "user@test.com", "username":"marco", "password":"password1"}' http://localhost:3000/users `

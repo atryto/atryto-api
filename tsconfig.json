@@ -2,8 +2,18 @@
     "compilerOptions": {
         "target": "ES2017",
         "module": "commonjs",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "allowJs": true,
         "rootDir": "src",
         "outDir": "bin",
-        "inlineSourceMap": true
-    }
+        "inlineSourceMap": true,
+        "skipLibCheck": true
+    },
+    "exclude": [
+        "database",
+        "scripts",
+        "node_modules",
+        "bin",
+    ]
 }

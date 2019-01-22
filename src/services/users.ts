@@ -1,71 +1,86 @@
 import config from "../config/config";
-import IUser from "../models/iUser";
-import UserDAO from "../daos/userDAO";
 import * as jwt from "jsonwebtoken";
 import * as bcrypt from "bcrypt";
-import AbstractService from "./abstractService";
+import User from "../models/User";
+import ICrudService from "./iCrudService";
+import { Logger } from "pino";
+import Log from "../globals/logger";
 
 const logger: any = require("pino")({ level: config.logLevel });
 
-export default class UsersService extends AbstractService<IUser> {
+export default class UsersService implements ICrudService<User> {
   
+  private logger: Logger;
+
   constructor() {
-    super(new UserDAO());
+    this.logger = Log.getInstance().getLogger();
   }
 
-  public async get(user: IUser): Promise<IUser[]> {
+  public async insert(model: any): Promise<User> {
     try {
-      const users = await super.get(user);
-      return users.map(user => {
-        delete user.password;
-        return user;
-      });
+      const salt = await bcrypt.genSalt(config.passwordSalt);
+      model.password = await bcrypt.hash(model.password, salt);
+      const { password, ...user } = (await User.create(model)).toJSON();
+      return User.build(user);
     } catch (error) {
-      logger.error(error);
+      this.logger.error(error);
       throw error;
     }
   }
 
-  public async getById(id: number): Promise<IUser> {
+  public async get(model: any): Promise<User[]> {
     try {
-      const user: IUser = await super.getById(id) as IUser;
+      const users = await User.findAll(model);
+      return users.map(user => {
+        const { password, ...res } = user.toJSON();
+        return User.build(res);
+      });
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
+
+  public async getById(id: number): Promise<User> {
+    try {
+      const user: User = await User.findById(id) as User;
       delete user.password;
       return user;
     } catch (error) {
-      logger.error(error);
+      this.logger.error(error);
       throw error;
     }
   }
 
-  public async login(user: IUser): Promise<String> {
+  public async login(user: any): Promise<String> {
     try {
-      const query: IUser = {} as IUser;
+      const where: any = {};
 
-      if (user.email) query.email = user.email;
-      if (user.username) query.username = user.username;
+      if (user.email) where.email = user.email;
+      if (user.username) where.username = user.username;
 
-      const users: IUser[] = await this.dao.get(query);
-      if (!users || users.length <= 0) {
-        throw Error('User not found');
-      }
-      const dbUser: IUser = users[0];
+      const dbUser: User = await User.findOne({ where });
       const checkPassword = await bcrypt.compare(user.password, dbUser.password);
       if (!checkPassword) {
         throw Error('Invalid password.');
       }
-      const {password, ...modUser} = dbUser;
+      const {password, ...modUser} = dbUser.toJSON();
       // create a token
       const token = await jwt.sign({ ...modUser }, config.tokenSecret, {
         expiresIn: 2 * 86400 // expires in 48 hours
       });
       return token;
     } catch (error) {
-      logger.error(error);
+      this.logger.error(error);
       throw error;
     }
   }
 
-  public async update(id:number, model: IUser): Promise<Boolean> {
+  public async update(id:number, model: any): Promise<User> {
+    const foundModel: User = await this.getById(id);
+    if (!foundModel) {
+      throw new Error('not found');
+    }
     if ('email' in model) {
       throw Error('email cannot be modified');
     }
@@ -76,7 +91,19 @@ export default class UsersService extends AbstractService<IUser> {
       const salt = await bcrypt.genSalt(config.passwordSalt);
       model.password = await bcrypt.hash(model.password, salt);
     }
-    return super.update(id, model);
+    await foundModel.update(model);
+    return foundModel;
+  }
+
+  public async delete(id: number): Promise<Boolean> {
+    try {
+      const foundModel: User = await this.getById(id);
+      await foundModel.destroy();
+      return true;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
   }
 
 }

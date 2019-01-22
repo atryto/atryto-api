@@ -1,10 +1,7 @@
 import * as jwt from "jsonwebtoken";
 import config from "../config/config";
-import IUser from "../models/iUser";
 import OffersService from "../services/offers";
-import IOffer from "../models/IOffer";
 import OfferLookupsService from "../services/offerLookups";
-import IOfferMatch from "../models/IOfferMatch";
 import OfferMatchesService from "../services/offerMatches";
 const logger: any = require("pino")({ level: config.logLevel });
 
@@ -17,9 +14,9 @@ export function setupRoutes(fastify) {
    * @apiParam {String} citySlug the city slug(lower case cities names: toronto, vancouver, ottawa)
    * @apiParam {String} sourceCoinSymbol the coin symbol of the currency the user has(upper case cities names: USD, CAD, BRL, BTC, ETH)
    * @apiParam {String} destCoinSymbol the coin symbol of the currency the user wants(upper case cities names: USD, CAD, BRL, BTC, ETH)
-   * @apiParam {Number} wantedPricePerUnit the price for the offer (sourceCoinSymbol isCAD, destCoinSymbol BRL, so wanted price 2.81)
-   * @apiParam {Number} amount the amount desired regarding the destCoinSymbol(you want 1000cad and have brl, this field will be 1000)
-   * @apiParam {Number} [minAmount] the minimum amount the user would be interested in(the amount is 1000 but the user may accept an offer with a lower amount)
+   * @apiParam {Number} wantedPricePerUnit the price(in CENTS) for the offer (sourceCoinSymbol isCAD, destCoinSymbol BRL, so wanted price 2.81)
+   * @apiParam {Number} amount the amount(in CENTS) desired regarding the destCoinSymbol(you want 1000cad and have brl, this field will be 1000)
+   * @apiParam {Number} [minAmount] the minimum amount(in CENTS) the user would be interested in(the amount is 1000 but the user may accept an offer with a lower amount)
    */
   fastify.post("/offers", async (request, reply) => {
     try {
@@ -32,9 +29,9 @@ export function setupRoutes(fastify) {
         logger.error(invalidPayloadMsg);
         return reply.code(400).send({ msg: invalidPayloadMsg });
       }
-      const user: IUser = await jwt.verify(token, config.tokenSecret) as IUser;
       
-      const offer: IOffer = {
+      const user: any = await jwt.verify(token, config.tokenSecret);
+      const offer: any = {
         userId: user.id,
         citySlug: request.body.citySlug && request.body.citySlug.trim().toLowerCase(),
         sourceCoinSymbol: request.body.sourceCoinSymbol && request.body.sourceCoinSymbol.trim().toUpperCase(),
@@ -65,9 +62,8 @@ export function setupRoutes(fastify) {
       if (!token) {
         return reply.code(401).send({ auth: false, message: 'User not logged in.' });
       }
-      const user: IUser = await jwt.verify(token, config.tokenSecret) as IUser;
-      
-      const offerMatch: IOfferMatch = {
+      const user: any = await jwt.verify(token, config.tokenSecret);
+      const offerMatch: any = {
         userId: user.id,
         offerId: request.params.id,
       };
@@ -93,9 +89,9 @@ export function setupRoutes(fastify) {
    * @apiParam {String} [citySlug] the city slug(lower case cities names: toronto, vancouver, ottawa)
    * @apiParam {String} [sourceCoinSymbol] the coin symbol of the currency the user has(upper case cities names: USD, CAD, BRL, BTC, ETH)
    * @apiParam {String} [destCoinSymbol] the coin symbol of the currency the user wants(upper case cities names: USD, CAD, BRL, BTC, ETH)
-   * @apiParam {Number} [wantedPricePerUnit] the price for the offer (sourceCoinSymbol isCAD, destCoinSymbol BRL, so wanted price 2.81)
-   * @apiParam {Number} [amount] the amount desired regarding the destCoinSymbol(you want 1000cad and have brl, this field will be 1000)
-   * @apiParam {Number} [minAmount] the minimum amount the user would be interested in(the amount is 1000 but the user may accept an offer with a lower amount)
+   * @apiParam {Number} [wantedPricePerUnit] the price(in CENTS) for the offer (sourceCoinSymbol isCAD, destCoinSymbol BRL, so wanted price 2.81)
+   * @apiParam {Number} [amount] the amount(in CENTS) desired regarding the destCoinSymbol(you want 1000cad and have brl, this field will be 1000)
+   * @apiParam {Number} [minAmount] the minimum amount(in CENTS) the user would be interested in(the amount is 1000 but the user may accept an offer with a lower amount)
    */
   fastify.put("/offers/:id", async (request, reply) => {
     try {
@@ -103,7 +99,7 @@ export function setupRoutes(fastify) {
       if (!token) 
         return reply.code(401).send({ auth: false, message: 'No token provided.' });
       
-      const user: IUser = await jwt.verify(token, config.tokenSecret) as IUser;
+      const user: any = await jwt.verify(token, config.tokenSecret);
       if (!user) {
         return reply.code(401).send({ auth: false, message: 'Failed to authenticate token.' });
       }
@@ -132,7 +128,6 @@ export function setupRoutes(fastify) {
         sourceCoinSymbol: request.query.sourceCurrency && request.query.sourceCurrency.trim().toUpperCase(),
         destCoinSymbol: request.query.targetCurrency && request.query.targetCurrency.trim().toUpperCase(),
       }
-      console.log(`offers rout query: ${JSON.stringify(query, null,2)}`);
       const offers = await offerService.get(query);
       const response = { result: offers };
       reply.code(200).send(response);
@@ -148,7 +143,7 @@ export function setupRoutes(fastify) {
 
 }
 
-function isOfferPayloadNotValid(offer: IOffer) {
+function isOfferPayloadNotValid(offer: any) {
   if (!offer.citySlug) {
     return 'Missing field "citySlug"';
   }

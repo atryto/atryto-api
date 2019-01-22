@@ -1,6 +1,5 @@
 import * as jwt from "jsonwebtoken";
 import config from "../config/config";
-import IUser from "../models/iUser";
 import UsersService from "../services/users";
 const logger: any = require("pino")({ level: config.logLevel });
 
@@ -25,10 +24,9 @@ export function setupRoutes(fastify) {
           reply.code(400).send({ msg: "Missing field" });
           logger.error('Missing field');
       }
-      const user: IUser = request.body;
+      const user: any = request.body;
       const userService = new UsersService();
       const result = await userService.insert(user);
-      console.log(`ROUTE result: ${JSON.stringify(result)}`);
       reply.code(200).send(result);
       logger.info(`User insertion: ${JSON.stringify(result)}`);
     } catch (error) {
@@ -51,7 +49,7 @@ export function setupRoutes(fastify) {
         logger.error('Missing field');
         return reply.code(400).send({ msg: "Missing field" });
       }
-      const user: IUser = request.body;
+      const user: any = request.body;
       const userService = new UsersService();
       const token = await userService.login(user);
       reply.code(200).send({token: token});
@@ -129,7 +127,7 @@ export function setupRoutes(fastify) {
       if (!token) {
         return reply.code(401).send({ auth: false, message: 'No token provided.' });
       }
-      const user: IUser = await jwt.verify(token, config.tokenSecret) as IUser;
+      const user: any = await jwt.verify(token, config.tokenSecret);
       if (!user) {
         return reply.code(401).send({ auth: false, message: 'Failed to authenticate token.' });
       }
@@ -159,7 +157,7 @@ export function setupRoutes(fastify) {
       if (!token) {
         return reply.code(401).send({ auth: false, message: 'No token provided.' });
       }
-      const user: IUser = await jwt.verify(token, config.tokenSecret) as IUser;
+      const user: any = await jwt.verify(token, config.tokenSecret);
       if (!user) {
         return reply.code(401).send({ auth: false, message: 'Failed to authenticate token.' });
       }
