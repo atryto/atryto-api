@@ -7,6 +7,8 @@ export default {
     schema: process.env.DB_SCHEMAS || "exchange",
     timezone: process.env.DB_TIMEZONE || "UTC",
     user: process.env.DB_USER || "root",
+    url: process.env.DB_URL || "mysql://root:root@127.0.0.1:3306/exchange",
+    dialect: process.env.DB_DIALECT || "mysql",
   },
   fastifyConfig: {
     logger: process.env.ENABLE_LOGGING || "true",

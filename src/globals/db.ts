@@ -18,8 +18,9 @@ export default class Db {
 
   private connect() {
     this.sequelize = new Sequelize({
+      host: config.database.host,
       database: config.database.schema,
-      dialect: "mysql",
+      dialect: config.database.dialect,
       username: config.database.user,
       password: config.database.password,
       modelPaths: [path.join(__dirname,'../models')]

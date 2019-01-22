@@ -8,6 +8,7 @@
     "test": " node_modules/.bin/nyc node_modules/.bin/mocha -r ts-node/register src/**/*.test.ts --exit",
     "code-coverage": "node_modules/.bin/nyc report --reporter=text",
     "start": "npm run build && node bin/server.js",
+    "start-container": "NODE_ENV=docker sh scripts/migrate_db.sh && npm run start",
     "watch": "node node_modules/typescript/bin/tsc && ./node_modules/concurrently/src/main.js \"node node_modules/typescript/bin/tsc -w --outDir bin\" \"node_modules/pm2/bin/pm2 start bin/server.js --watch --no-daemon\" ",
     "build-docker": "docker build -t atryto-api:latest .",
     "build-compose": "npm run build-docker && docker-compose up",
