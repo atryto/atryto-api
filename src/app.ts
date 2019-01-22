@@ -7,36 +7,41 @@ import * as pingRoutes from "./routes/ping";
 import * as userRoutes from "./routes/users";
 import * as offerRoutes from "./routes/offers";
 import * as dotenv from 'dotenv';
+import Log from "./globals/logger";
+import { Logger } from "pino";
+import City from "./models/City";
 
 dotenv.config();
-const logger: any = require("pino")({ level: config.logLevel });
 
 type Fastify = FastifyInstance<Server, IncomingMessage, ServerResponse>;
 
 export default class App {
   private fastify: Fastify;
+  private db: Db;
+  private logger: Logger;
 
   constructor() {
     this.fastify = FastifyMaster();
     this.fastify.use(require("cors")());
     Db.getInstance(true);
-
+    this.db = Db.getInstance();
+    this.logger = Log.getInstance().getLogger();
     userRoutes.setupRoutes(this.fastify);
     pingRoutes.setupRoutes(this.fastify);
     offerRoutes.setupRoutes(this.fastify);
   }
 
-  public getFastify() {
+  public getFastify() { 
     return this.fastify;
   }
 
   public startServer() {
     this.fastify.listen(+config.port, config.host, (err) => {
       if (err) {
-        logger.error(err);
+        this.logger.error(err);
         process.exit(1);
       }
-      logger.info(`server listening on ${this.fastify.server.address().port}`);
+      this.logger.info(`server listening on ${this.fastify.server.address().port}`);
     });
   }
 

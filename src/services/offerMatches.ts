@@ -1,24 +1,27 @@
-import AbstractService from "./abstractService";
-import OfferMatchDAO from "../daos/offerMatchDAO";
-import IOfferMatch from "../models/IOfferMatch";
 import OffersService from "./offers";
-import IOffer from "../models/IOffer";
 import * as Mailgun from 'mailgun-js';
 import config from "../config/config";
 import UsersService from "./users";
-import IUser from "../models/iUser";
+import ICrudService from "./iCrudService";
+import OfferMatch from "../models/OfferMatch";
+import Offer from "../models/Offer";
+import User from "../models/User";
+import Log from "../globals/logger";
+import { Logger } from "pino";
 const logger: any = require("pino")({ level: config.logLevel });
 
-export default class OfferMatchesService extends AbstractService<IOfferMatch> {
+export default class OfferMatchesService implements ICrudService<OfferMatch> {
   
-  constructor() {
-    super(new OfferMatchDAO());
-  }
+  private logger: Logger;
 
-  private async sendEmail(offer: IOffer, offerMatch: IOfferMatch) {
+  constructor() {
+    this.logger = Log.getInstance().getLogger();
+  }
+  
+  private async sendEmail(offer: Offer, offerMatch: OfferMatch) {
     const userService = new UsersService();
-    const userOffer: IUser = await userService.getById(offer.userId);
-    const userMatching: IUser = await userService.getById(offerMatch.userId);
+    const userOffer: User = await userService.getById(offer.userId);
+    const userMatching: User = await userService.getById(offerMatch.userId);
     const mailgun = new Mailgun({apiKey: 'b0538c90b8838fba5da3f182df6b87c2-3939b93a-fb0784ad'/*config.mailgunKey*/, domain: config.mailgunDomain});
     var data = {
       //Specify email data
@@ -40,18 +43,59 @@ export default class OfferMatchesService extends AbstractService<IOfferMatch> {
       });
   }
 
-  public async insert(model: IOfferMatch) {
+  public async insert(model: any): Promise<OfferMatch> {
     const offerService = new OffersService();
-    const offer:IOffer = await offerService.getById(model.offerId);
+    const offer: Offer = await offerService.getById(model.offerId);
     if (!offer) {
       throw new Error('Offer not found');
     }
     if (offer.userId === model.userId) {
       throw new Error('User cannot bid its own offer');
     }
-    const inserted  = await super.insert(model);
+    const inserted  = await OfferMatch.create(model);
     this.sendEmail(offer, model);
     return inserted;
+  }
+
+  public async get(model: any): Promise<OfferMatch[]> {
+    try {
+      const offerMatches = await OfferMatch.findAll(model);
+      return offerMatches;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
+
+  public async getById(id: number): Promise<OfferMatch> {
+    try {
+      const offerMatch: OfferMatch = await OfferMatch.findById(id) as OfferMatch;
+      return offerMatch;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
+
+  
+  public async update(id:number, model: any): Promise<OfferMatch> {
+    const foundOfferMatch: OfferMatch = await this.getById(id);
+    if (!foundOfferMatch) {
+      throw Error('Offer not found');
+    }
+    await foundOfferMatch.update(model);
+    return foundOfferMatch;
+  }
+
+  public async delete(id: number): Promise<Boolean> {
+    try {
+      const foundModel: OfferMatch = await this.getById(id);
+      await foundModel.destroy();
+      return true;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
   }
 
 }

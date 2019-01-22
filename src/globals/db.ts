@@ -1,62 +1,34 @@
-import * as MySQL from "mysql";
+import { Sequelize } from "sequelize-typescript";
 import config from "../config/config";
-const logger: any = require("pino")({ level: config.logLevel });
+import * as path from "path";
+import Log from "./logger";
+import { Logger } from "pino";
 
 export default class Db {
-
   private static instance: Db;
-  private connection: any;
+  private sequelize: Sequelize;
 
-  public static getInstance(useSchema: boolean = false) {
+  public static getInstance(useSchema: boolean = false): Db {
     if (!this.instance) {
       this.instance = new Db();
-      if (!useSchema || useSchema === null) {
-        this.instance.connect();
-      } else {
-        this.instance.connectUsingSchema();
-      }
+      this.instance.connect();
     }
     return this.instance;
   }
 
   private connect() {
-    this.connection = MySQL.createConnection({
-      connectionLimit: config.database.poolSize,
-      host: config.database.host,
-      multipleStatements: true,
-      password: config.database.password,
-      port: config.database.port,
-      timezone: config.database.timezone,
-      user: config.database.user,
-    });
-  }
-
-  private connectUsingSchema() {
-    this.connection = MySQL.createConnection({
-      connectionLimit: config.database.poolSize,
+    this.sequelize = new Sequelize({
       database: config.database.schema,
-      host: config.database.host,
-      multipleStatements: true,
+      dialect: "mysql",
+      username: config.database.user,
       password: config.database.password,
-      port: config.database.port,
-      timezone: config.database.timezone,
-      user: config.database.user,
+      modelPaths: [path.join(__dirname,'../models')]
     });
+    const logger: Logger = Log.getInstance().getLogger();
+    logger.info('Database Connected...');
   }
 
-  public queryWrite(queryString: string, parameters: any): Promise<any> {
-    return new Promise<any>( (resolve, reject) => {
-      this.connection.query(queryString, parameters, (err: MySQL.MysqlError, data: any) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(data);
-      });
-    });
+  public getSequelize(): Sequelize {
+    return this.sequelize;
   }
-
-  public getConnection(): Promise<any> {
-    return this.connection;
-  }
-
 }

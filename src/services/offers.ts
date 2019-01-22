@@ -1,15 +1,49 @@
-import IOffer from "../models/IOffer";
-import OfferDAO from "../daos/offerDAO";
-import AbstractService from "./abstractService";
+import Offer from "../models/Offer";
+import { Logger } from "pino";
+import Log from "../globals/logger";
+import ICrudService from "./iCrudService";
 
-export default class OffersService extends AbstractService<IOffer> {
+export default class OffersService implements ICrudService<Offer> {
   
+  private logger: Logger;
+
   constructor() {
-    super(new OfferDAO());
+    this.logger = Log.getInstance().getLogger();
   }
 
-  public async update(id:number, model: IOffer): Promise<Boolean> {
-    const foundOffer: IOffer = await this.getById(id);
+  public async insert(model: any): Promise<Offer> {
+    try {
+      const result = await Offer.create(model);
+      return result;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
+
+  public async get(model: any): Promise<Offer[]> {
+    try {
+      const offers = await Offer.findAll(model);
+      return offers;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
+
+  public async getById(id: number): Promise<Offer> {
+    try {
+      const offer: Offer = await Offer.findById(id) as Offer;
+      return offer;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
+
+  
+  public async update(id:number, model: any): Promise<Offer> {
+    const foundOffer: Offer = await this.getById(id);
     if (!foundOffer) {
       throw Error('Offer not found');
     }
@@ -17,7 +51,19 @@ export default class OffersService extends AbstractService<IOffer> {
       throw Error('You do not have authorization to modify this offer');
     }
     delete model.userId;
-    return super.update(id, model);
+    await foundOffer.update(model);
+    return foundOffer;
+  }
+
+  public async delete(id: number): Promise<Boolean> {
+    try {
+      const foundModel: Offer = await this.getById(id);
+      await foundModel.destroy();
+      return true;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
   }
 
 }

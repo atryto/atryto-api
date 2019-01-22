@@ -1,0 +1,36 @@
+{
+  "development": {
+    "database": "exchange",
+    "username": "root",
+    "password": "root",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "test": {
+    "database": "exchange_test",
+    "username": "root",
+    "password": "p4SSW0rd",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "circleci": {
+    "database": "exchange_dvl",
+    "username": "root",
+    "password": "p4SSW0rd",
+    "host": "localhost",
+    "dialect": "mysql"
+  },
+  "docker": {
+    "database": "exchange",
+    "username": "root",
+    "password": "p4SSW0rd",
+    "host": "db",
+    "dialect": "mysql"
+  },
+  "staging": {
+    "use_env_variable": "DB_URL"
+  },
+  "production": {
+    "use_env_variable": "DB_URL"
+  }
+}
