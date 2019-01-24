@@ -8,7 +8,7 @@ export default class Db {
   private static instance: Db;
   private sequelize: Sequelize;
 
-  public static getInstance(useSchema: boolean = false): Db {
+  public static getInstance(): Db {
     if (!this.instance) {
       this.instance = new Db();
       this.instance.connect();
