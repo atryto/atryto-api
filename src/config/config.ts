@@ -1,4 +1,5 @@
 export default {
+  apiURL: process.env.API_URL || "http://localhost:3000",
   database: {
     host: process.env.DB_HOST || "127.0.0.1",
     password: process.env.DB_PASSWORD || "root",
@@ -20,4 +21,5 @@ export default {
   tokenSecret: process.env.TOKEN_SECRET || "JWT-TOKEN-SECRET",
   mailgunKey: process.env.MAILGUN_KEY || "mail-gun-key",
   mailgunDomain: process.env.MAILGUN_DOMAIN || "mail-gun-domain",
+  emailSender: process.env.SENDER_EMAIL || "Atryto team <info@ghtechnology.ca>",
 };
