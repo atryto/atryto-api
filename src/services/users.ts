@@ -4,6 +4,7 @@ import * as bcrypt from "bcrypt";
 import User from "../models/User";
 import ICrudService from "./iCrudService";
 import { Logger } from "pino";
+import * as Boom from "boom";
 import Log from "../globals/logger";
 import Mailer from "../globals/mailer";
 import IEmail from "../models/interfaces/IEmail";
@@ -24,7 +25,14 @@ export default class UsersService implements ICrudService<User> {
     try {
       const salt = await bcrypt.genSalt(config.passwordSalt);
       model.password = await bcrypt.hash(model.password, salt);
-      const { password, ...user } = (await User.create(model)).toJSON();
+      const { username, email, ...defaults } = model;
+      const foundOrCreate = await User.findOrCreate({ where: { username, email }, defaults: defaults });
+      // sequelize returns an array, first item is the object, second is a boolean
+      // if this boolean is true it means it was created
+      if (foundOrCreate.length > 1 && !foundOrCreate[1]) {
+        throw Boom.forbidden('User already exists');
+      }
+      const { password, ...user } = (foundOrCreate[0]).toJSON();
       const data: IEmail = {
         from: config.emailSender,
         to: user.email,
