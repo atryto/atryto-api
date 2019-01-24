@@ -4,33 +4,50 @@
     "username": "root",
     "password": "root",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "seederStorageTableName": "sequelizeData",
+    "migrationStorageTableName": "sequelizeMeta"
   },
   "test": {
     "database": "exchange_test",
     "username": "root",
     "password": "p4SSW0rd",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "seederStorage": "sequelize",
+    "seederStorageTableName": "sequelizeData",
+    "migrationStorageTableName": "sequelizeMeta"
   },
   "circleci": {
     "database": "exchange_dvl",
     "username": "root",
     "password": "p4SSW0rd",
     "host": "localhost",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "seederStorage": "sequelize",
+    "seederStorageTableName": "sequelizeData",
+    "migrationStorageTableName": "sequelizeMeta"
   },
   "docker": {
     "database": "exchange",
     "username": "root",
     "password": "p4SSW0rd",
     "host": "db",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "seederStorage": "sequelize",
+    "seederStorageTableName": "sequelizeData",
+    "migrationStorageTableName": "sequelizeMeta"
   },
   "staging": {
-    "use_env_variable": "DB_URL"
+    "use_env_variable": "DB_URL",
+    "seederStorage": "sequelize",
+    "seederStorageTableName": "sequelizeData",
+    "migrationStorageTableName": "sequelizeMeta"
   },
   "production": {
-    "use_env_variable": "DB_URL"
+    "use_env_variable": "DB_URL",
+    "seederStorage": "sequelize",
+    "seederStorageTableName": "sequelizeData",
+    "migrationStorageTableName": "sequelizeMeta"
   }
 }
