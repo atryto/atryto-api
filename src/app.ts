@@ -9,7 +9,6 @@ import * as offerRoutes from "./routes/offers";
 import * as dotenv from 'dotenv';
 import Log from "./globals/logger";
 import { Logger } from "pino";
-import City from "./models/City";
 
 dotenv.config();
 
@@ -23,6 +22,7 @@ export default class App {
   constructor() {
     this.fastify = FastifyMaster();
     this.fastify.use(require("cors")());
+    this.fastify.register(require('fastify-boom'));
     this.db = Db.getInstance();
     this.logger = Log.getInstance().getLogger();
     userRoutes.setupRoutes(this.fastify);
