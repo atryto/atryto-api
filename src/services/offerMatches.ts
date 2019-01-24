@@ -8,39 +8,31 @@ import Offer from "../models/Offer";
 import User from "../models/User";
 import Log from "../globals/logger";
 import { Logger } from "pino";
+import IEmail from "../models/interfaces/IEmail";
+import Mailer from "../globals/mailer";
 const logger: any = require("pino")({ level: config.logLevel });
 
 export default class OfferMatchesService implements ICrudService<OfferMatch> {
   
   private logger: Logger;
+  private mailer: Mailer;
 
   constructor() {
     this.logger = Log.getInstance().getLogger();
+    this.mailer = Mailer.getInstance();
   }
   
   private async sendEmail(offer: Offer, offerMatch: OfferMatch) {
     const userService = new UsersService();
     const userOffer: User = await userService.getById(offer.userId);
     const userMatching: User = await userService.getById(offerMatch.userId);
-    const mailgun = new Mailgun({apiKey: 'b0538c90b8838fba5da3f182df6b87c2-3939b93a-fb0784ad'/*config.mailgunKey*/, domain: config.mailgunDomain});
-    var data = {
-      //Specify email data
-        from: 'info@ghtechnology.ca',
-      //The email to contact
-        to: userOffer.email,
-      //Subject and text data
-        subject: 'Someone has matched your offer',
-        html: `Hello, the user ${userMatching.username}(email: ${userMatching.email}) has matched your offer id ${offer.id}. Contact him directly so you both can negotiate and finish the deal. Please do remember to verify his identity, Read our terms of service that states we are not responsible for any problem occured after the offer match. best of luck and please let us know how it ended.`
-      }
-      //Invokes the method to send emails given the above data with the helper library
-      mailgun.messages().send(data, function (err, body) {
-          //If there is an error, render the error page
-          if (err) {
-              console.log("got an error: ", err);
-              logger.error(err);
-          }
-          logger.info(`Email sent successfully for offer ${JSON.stringify(offerMatch, null, 2)}`);
-      });
+    const data: IEmail = {
+      from: config.emailSender,
+      to: userOffer.email,
+      subject: 'Someone has matched your offer',
+      html: `Hello, the user ${userMatching.username}(email: ${userMatching.email}) has matched your offer id ${offer.id}. Contact him directly so you both can negotiate and finish the deal. Please do remember to verify his identity, Read our terms of service that states we are not responsible for any problem occured after the offer match. best of luck and please let us know how it ended.`
+    };
+    this.mailer.sendEmail(data);
   }
 
   public async insert(model: any): Promise<OfferMatch> {
@@ -57,9 +49,17 @@ export default class OfferMatchesService implements ICrudService<OfferMatch> {
     return inserted;
   }
 
-  public async get(model: any): Promise<OfferMatch[]> {
+  public async get(where: any, limit: number = null, offset: number = null,
+    attributes: string[] = null, order: any[] = null): Promise<OfferMatch[]> {
     try {
-      const offerMatches = await OfferMatch.findAll(model);
+      const query: any = {};
+      
+      if (where) query.where = where;
+      if (limit) query.limit = limit;
+      if (offset) query.offset = offset;
+      if (attributes) query.attributes = attributes;
+
+      const offerMatches = await OfferMatch.findAll(query);
       return offerMatches;
     } catch (error) {
       this.logger.error(error);

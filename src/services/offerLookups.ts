@@ -21,9 +21,16 @@ export default class OfferLookupsService implements ICrudService<OfferLookup> {
     }
   }
 
-  public async get(model: any): Promise<OfferLookup[]> {
+  public async get(where: any, limit: number = null, offset: number = null,
+    attributes: string[] = null, order: any[] = null): Promise<OfferLookup[]> {
     try {
-      const list:OfferLookup[] = await OfferLookup.findAll(model) as OfferLookup[];
+      const query: any = {};
+      if (where) query.where = where;
+      if (limit) query.limit = limit;
+      if (offset) query.offset = offset;
+      if (attributes) query.attributes = attributes;
+
+      const list:OfferLookup[] = await OfferLookup.findAll(query) as OfferLookup[];
       return list;
     } catch (error) {
       this.logger.error(error);

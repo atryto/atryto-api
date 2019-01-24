@@ -5,22 +5,33 @@ import User from "../models/User";
 import ICrudService from "./iCrudService";
 import { Logger } from "pino";
 import Log from "../globals/logger";
+import Mailer from "../globals/mailer";
+import IEmail from "../models/interfaces/IEmail";
 
 const logger: any = require("pino")({ level: config.logLevel });
 
 export default class UsersService implements ICrudService<User> {
   
   private logger: Logger;
+  private mailer: Mailer;
 
   constructor() {
     this.logger = Log.getInstance().getLogger();
+    this.mailer = Mailer.getInstance();
   }
-
+  
   public async insert(model: any): Promise<User> {
     try {
       const salt = await bcrypt.genSalt(config.passwordSalt);
       model.password = await bcrypt.hash(model.password, salt);
       const { password, ...user } = (await User.create(model)).toJSON();
+      const data: IEmail = {
+        from: config.emailSender,
+        to: user.email,
+        subject: 'Welcome to Atryto',
+        html: `Hello ${user.username}, Welcome to Atryto, we are an <a href="https://github.com/atryto">open source</a> project aiming to help people avoiding fees and connecting.`
+      };
+      this.mailer.sendEmail(data);
       return User.build(user);
     } catch (error) {
       this.logger.error(error);
@@ -28,9 +39,17 @@ export default class UsersService implements ICrudService<User> {
     }
   }
 
-  public async get(model: any): Promise<User[]> {
+  public async get(where: any, limit: number = null, offset: number = null,
+    attributes: string[] = null, order: any[] = null): Promise<User[]> {
     try {
-      const users = await User.findAll(model);
+      const query: any = {};
+      
+      if (where) query.where = where;
+      if (limit) query.limit = limit;
+      if (offset) query.offset = offset;
+      if (attributes) query.attributes = attributes;
+
+      const users = await User.findAll(query);
       return users.map(user => {
         const { password, ...res } = user.toJSON();
         return User.build(res);
