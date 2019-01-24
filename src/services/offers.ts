@@ -1,5 +1,6 @@
 import Offer from "../models/Offer";
 import { Logger } from "pino";
+import * as Boom from "boom";
 import Log from "../globals/logger";
 import ICrudService from "./iCrudService";
 import Mailer from "../globals/mailer";
@@ -35,7 +36,6 @@ export default class OffersService implements ICrudService<Offer> {
     attributes: string[] = null, order: any[] = null): Promise<Offer[]> {
     try {
       const query: any = {};
-      
       if (where) query.where = where;
       if (limit) query.limit = limit;
       if (offset) query.offset = offset;
@@ -63,10 +63,10 @@ export default class OffersService implements ICrudService<Offer> {
   public async update(id:number, model: any): Promise<Offer> {
     const foundOffer: Offer = await this.getById(id);
     if (!foundOffer) {
-      throw Error('Offer not found');
+      throw Boom.notFound('Offer not found');
     }
     if (model.userId && foundOffer.userId != model.userId) {
-      throw Error('You do not have authorization to modify this offer');
+      throw Boom.unauthorized('You do not have authorization to modify this offer');
     }
     delete model.userId;
     await foundOffer.update(model);

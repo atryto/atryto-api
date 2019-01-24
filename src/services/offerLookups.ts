@@ -1,6 +1,7 @@
 import OfferLookup from "../models/OfferLookup";
 import ICrudService from "./iCrudService";
 import { Logger } from "pino";
+import * as Boom from "boom";
 import Log from "../globals/logger";
 
 export default class OfferLookupsService implements ICrudService<OfferLookup> {
@@ -42,7 +43,7 @@ export default class OfferLookupsService implements ICrudService<OfferLookup> {
     try {
       const foundModel: OfferLookup = await this.getById(id);
       if (!foundModel) {
-        throw new Error('not found');
+        throw Boom.notFound('not found');
       }
       await foundModel.update(model);
       return foundModel;

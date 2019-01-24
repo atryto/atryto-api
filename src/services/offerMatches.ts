@@ -8,9 +8,9 @@ import Offer from "../models/Offer";
 import User from "../models/User";
 import Log from "../globals/logger";
 import { Logger } from "pino";
+import * as Boom from "boom";
 import IEmail from "../models/interfaces/IEmail";
 import Mailer from "../globals/mailer";
-const logger: any = require("pino")({ level: config.logLevel });
 
 export default class OfferMatchesService implements ICrudService<OfferMatch> {
   
@@ -39,10 +39,10 @@ export default class OfferMatchesService implements ICrudService<OfferMatch> {
     const offerService = new OffersService();
     const offer: Offer = await offerService.getById(model.offerId);
     if (!offer) {
-      throw new Error('Offer not found');
+      throw Boom.notFound('Offer not found');
     }
     if (offer.userId === model.userId) {
-      throw new Error('User cannot bid its own offer');
+      throw Boom.forbidden('User cannot bid its own offer');
     }
     const inserted  = await OfferMatch.create(model);
     this.sendEmail(offer, model);
@@ -81,7 +81,7 @@ export default class OfferMatchesService implements ICrudService<OfferMatch> {
   public async update(id:number, model: any): Promise<OfferMatch> {
     const foundOfferMatch: OfferMatch = await this.getById(id);
     if (!foundOfferMatch) {
-      throw Error('Offer not found');
+      throw Boom.notFound('Offer not found');
     }
     await foundOfferMatch.update(model);
     return foundOfferMatch;

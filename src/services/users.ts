@@ -51,7 +51,6 @@ export default class UsersService implements ICrudService<User> {
     attributes: string[] = null, order: any[] = null): Promise<User[]> {
     try {
       const query: any = {};
-      
       if (where) query.where = where;
       if (limit) query.limit = limit;
       if (offset) query.offset = offset;
@@ -89,7 +88,7 @@ export default class UsersService implements ICrudService<User> {
       const dbUser: User = await User.findOne({ where });
       const checkPassword = await bcrypt.compare(user.password, dbUser.password);
       if (!checkPassword) {
-        throw Error('Invalid password.');
+        throw Boom.unauthorized('Invalid password.');
       }
       const {password, ...modUser} = dbUser.toJSON();
       // create a token
@@ -106,13 +105,13 @@ export default class UsersService implements ICrudService<User> {
   public async update(id:number, model: any): Promise<User> {
     const foundModel: User = await this.getById(id);
     if (!foundModel) {
-      throw new Error('not found');
+      throw Boom.notFound('not found');
     }
     if ('email' in model) {
-      throw Error('email cannot be modified');
+      throw Boom.forbidden('email cannot be modified');
     }
     if ('username' in model) {
-      throw Error('username cannot be modified');
+      throw Boom.forbidden('username cannot be modified');
     }
     if ('password' in model) {
       const salt = await bcrypt.genSalt(config.passwordSalt);
