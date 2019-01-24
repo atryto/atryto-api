@@ -23,7 +23,6 @@ export default class App {
   constructor() {
     this.fastify = FastifyMaster();
     this.fastify.use(require("cors")());
-    Db.getInstance(true);
     this.db = Db.getInstance();
     this.logger = Log.getInstance().getLogger();
     userRoutes.setupRoutes(this.fastify);
